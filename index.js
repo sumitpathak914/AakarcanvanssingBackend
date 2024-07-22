@@ -30,8 +30,8 @@ app.use('/products', productRoutes);
 app.use('/Quatation', QuatationRoutes);
 app.use('/Order', OrderRouter);
 app.use('/Factory', FactoryRoutes);
-app.use('/', RegisterRouter);
-app.use('/', UserRouter);
+app.use('', RegisterRouter);
+app.use('', UserRouter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
