@@ -15,7 +15,7 @@ const OrderTrackingDetailsSchema = new Schema({
 });
 
 const DispatchShippingDetailsSchema = new Schema({
-    DispatchID: { type: Number, },
+    DispatchID: { type: String, },
     EstimatedDeliveryDate: { type: Date, },
     DriverName: { type: String, },
     ContactNumber: { type: String, },
@@ -24,6 +24,7 @@ const DispatchShippingDetailsSchema = new Schema({
     Insurance: { type: String, },
     RefundStatus: { type: String, },
     OrderStatus: { type: String, },
+   DispatchStatus: { type: String, },
     OrderCancelReason: { type: String, },
     OrderPendingReason: { type: String, },
 });
@@ -38,12 +39,12 @@ const SupplierInfoSchema = new Schema({
 const ProductDetailsSchema = new Schema({
     ProductID: { type: String, },
     OrderDate: { type: String, },
+    PaymentDoneAmount: { type: String, } ,
     ProductName: { type: String, },
-    Supplier: { type: String, },
     MRP: { type: String, },
     QTY: { type: String, },
     Total: { type: String, },
-    Payment: { type: String, },
+    PaymentMethod: { type: String, },
     Duepayment: { type: String, },
     weight: { type: String, },
     ItemCategory: { type: String, },
@@ -57,7 +58,7 @@ const CustomerInfoSchema = new Schema({
     ShopName: { type: String, },
     ContactNo: { type: String, },
     EmailID: { type: String, },
-    PaymentMethod: { type: String, }
+   
 });
 
 const OrderSchema = new Schema({

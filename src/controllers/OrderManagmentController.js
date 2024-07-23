@@ -21,10 +21,10 @@ const orderController = {
     },
 
 
-     GetOrderDetails : async (req, res) => {
+    GetOrderDetails: async (req, res) => {
         try {
             const { orderId, productId } = req.body;
-            console.log(req.body);
+           
 
             // Find the order based on orderId
             const order = await Order.findOne({ orderId });
@@ -45,12 +45,95 @@ const orderController = {
                 result: true,
                 statusCode: 200,
                 message: 'Order details fetched successfully.',
+                orderId: order.orderId,  // Include the orderId in the response
                 ProductDetails: product,
                 customerInfo: customerInfo,
             });
         } catch (err) {
             console.error('Error in GetOrderDetails:', err);
             res.status(500).json({ error: err.message });
+        }
+    },
+
+
+    UpdateTheOrderStatus: async (req, res) => {
+        const { orderId, productId, uniqueCode } = req.body;
+
+        try {
+            // Log the incoming request data
+           
+
+            // Fetch the order from the database
+            const order = await Order.findOne({ orderId });
+
+            if (!order) {
+                return res.status(404).json({ message: 'Order not found' });
+            }
+
+            // Find the product within the order
+            const product = order.ProductDetails.find(p => p.ProductID === productId);
+
+            if (!product) {
+                return res.status(404).json({ message: 'Product not found in order' });
+            }
+
+            // Log the current state of the product for debugging
+            console.log('Current Product Details:', product);
+
+            // Update product details
+            product.dispatchShippingDetails.OrderStatus = 'Shipped';
+            product.OrderTrackingDetails.Shipped = true;
+            product.OrderTrackingDetails.Place = true;
+            product.dispatchShippingDetails.DispatchStatus = 'pending';
+            product.dispatchShippingDetails.DispatchID = uniqueCode; // Ensure DispatchId is correctly assigned
+
+            // Log the updated state of the product for debugging
+            
+
+            // Save the updated order
+            const updatedOrder = await order.save();
+
+            // Log the result of the save operation
+            console.log('Order After Save:', updatedOrder);
+
+            // Send response
+            res.json({ message: 'Order status updated successfully' });
+        } catch (error) {
+            // Handle errors
+            console.error('Error updating order status:', error);
+            res.status(500).json({ message: 'Server error', error });
+        }
+    },
+
+    getDispatchingOrders: async (req, res) => {
+        try {
+            // Fetch all orders
+            const orders = await Order.find();
+
+            // Collect all products that match the criteria into a single array
+            const filteredProducts = [];
+
+            orders.forEach(order => {
+                order.ProductDetails.forEach(product => {
+                    if (product.dispatchShippingDetails.OrderStatus === 'Shipped' &&
+                        product.OrderTrackingDetails.Shipped === true) {
+                        filteredProducts.push({
+                            ...product.toObject(),
+                            customerInfo: order.customerInfo,
+                            orderId: order.orderId
+                        });
+                    }
+                });
+            });
+
+            res.json({
+                result: true,
+                statusCode: 200,
+                message: 'Dispatch Product List retrieved successfully',
+                DispatchOrderList: filteredProducts
+            });
+        } catch (error) {
+            res.status(500).json({ message: 'Server error', error });
         }
     },
 
