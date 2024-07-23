@@ -35,6 +35,8 @@ const SupplierInfoSchema = new Schema({
 
 const ProductDetailsSchema = new Schema({
     ProductID: { type: String, },
+    OrderDate: { type: String, },
+    ProductName: { type: String, },
     Supplier: { type: String, },
     MRP: { type: String, },
     QTY: { type: String, },
