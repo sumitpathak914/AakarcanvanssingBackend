@@ -10,5 +10,5 @@ const authenticateToken = require('../middleware/auth');
 
 OrderRouter.post('/CreateOrder', authenticateToken, OrderManagmentController.CreateOrder);
 OrderRouter.get('/GetAllOrderDetails', authenticateToken, OrderManagmentController.GetAllOrdersDetails);
-OrderRouter.get('/Order/GetOrderDetails', OrderManagmentController.GetOrderDetails);
+OrderRouter.post('/GetOrderDetails', authenticateToken, OrderManagmentController.GetOrderDetails);
 module.exports = OrderRouter;
