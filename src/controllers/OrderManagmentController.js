@@ -20,6 +20,29 @@ const orderController = {
         }
     },
 
+
+    GetOrderDetails: async (req, res) => {
+        try {
+            const { orderId, productId } = req.query;
+
+            // Find the order based on orderId
+            const order = await Order.findOne({ orderId });
+            if (!order) {
+                return res.status(404).json({ result: false, statusCode: 404, message: 'Order not found.' });
+            }
+
+            // Find the product details within the order based on productId
+            const product = order.ProductDetails.find(p => p.ProductID === productId);
+            if (!product) {
+                return res.status(404).json({ result: false, statusCode: 404, message: 'Product not found in the order.' });
+            }
+
+            res.status(200).json({ result: true, statusCode: 200, message: 'Order details fetched successfully.', ProductDetails: product });
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    },
+
     
 };
 

@@ -9,7 +9,9 @@ const OrderTrackingDetailsSchema = new Schema({
     Delivery: { type: Boolean, },
     DeliveryNote: { type: String, },
     Delivered: { type: Boolean, },
-    DeliveredNote: { type: String, }
+    DeliveredNote: { type: String, },
+    Billing_Address: { type: String, },
+    Shipping_Address: { type: String, }
 });
 
 const DispatchShippingDetailsSchema = new Schema({
