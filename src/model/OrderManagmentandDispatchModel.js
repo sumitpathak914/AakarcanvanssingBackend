@@ -21,9 +21,9 @@ const DispatchShippingDetailsSchema = new Schema({
     TaxAndDuties: { type: String, },
     Insurance: { type: String, },
     RefundStatus: { type: String, },
-    orderStatus: { type: String, },
-    orderCancelReason: { type: String, },
-    orderPendingReason: { type: String, },
+    OrderStatus: { type: String, },
+    OrderCancelReason: { type: String, },
+    OrderPendingReason: { type: String, },
 });
 
 const SupplierInfoSchema = new Schema({
