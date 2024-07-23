@@ -57,6 +57,7 @@ const CustomerInfoSchema = new Schema({
 });
 
 const OrderSchema = new Schema({
+    orderId: { type: String, },
     customerInfo: { type: CustomerInfoSchema, },
     ProductDetails: { type: [ProductDetailsSchema], } // Array of products
 });
