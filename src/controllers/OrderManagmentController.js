@@ -81,7 +81,7 @@ const orderController = {
             console.log('Current Product Details:', product);
 
             // Update product details
-            // product.dispatchShippingDetails.OrderStatus = 'Shipped';
+            product.dispatchShippingDetails.OrderStatus = 'Shipped';
             // product.OrderTrackingDetails.Shipped = true;
             product.OrderTrackingDetails.Place = true;
             product.dispatchShippingDetails.DispatchStatus = 'pending';
