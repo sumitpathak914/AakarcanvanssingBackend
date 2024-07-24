@@ -6,8 +6,6 @@ const OrderTrackingDetailsSchema = new Schema({
     PlaceNote: { type: String, },
     Shipped: { type: Boolean, },
     ShippedNote: { type: String, },
-    Delivery: { type: Boolean, },
-    DeliveryNote: { type: String, },
     Delivered: { type: Boolean, },
     DeliveredNote: { type: String, },
     Billing_Address: { type: String, },
@@ -24,7 +22,10 @@ const DispatchShippingDetailsSchema = new Schema({
     Insurance: { type: String, },
     RefundStatus: { type: String, },
     OrderStatus: { type: String, },
-   DispatchStatus: { type: String, },
+    weight: { type: String, },
+    numberOfItems: { type: String, },
+    Category: { type: String, },
+    DispatchStatus: { type: String, },
     OrderCancelReason: { type: String, },
     OrderPendingReason: { type: String, },
 });
@@ -39,7 +40,7 @@ const SupplierInfoSchema = new Schema({
 const ProductDetailsSchema = new Schema({
     ProductID: { type: String, },
     OrderDate: { type: String, },
-    PaymentDoneAmount: { type: String, } ,
+    PaymentDoneAmount: { type: String, },
     ProductName: { type: String, },
     MRP: { type: String, },
     QTY: { type: String, },
@@ -58,7 +59,7 @@ const CustomerInfoSchema = new Schema({
     ShopName: { type: String, },
     ContactNo: { type: String, },
     EmailID: { type: String, },
-   
+
 });
 
 const OrderSchema = new Schema({

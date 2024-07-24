@@ -13,4 +13,6 @@ OrderRouter.get('/GetAllOrderDetails', authenticateToken, OrderManagmentControll
 OrderRouter.post('/GetOrderDetails', authenticateToken, OrderManagmentController.GetOrderDetails);
 OrderRouter.post('/UpdateStatus', authenticateToken, OrderManagmentController.UpdateTheOrderStatus);
 OrderRouter.get('/GetDispatchList', authenticateToken, OrderManagmentController.getDispatchingOrders);
+OrderRouter.post('/UpdateStatusPendingAndCancel', authenticateToken, OrderManagmentController.handleOrderActionUpdateAndCancel);
+OrderRouter.post('/AddDetailsDispatch', authenticateToken, OrderManagmentController.AddDetailsOfDispatch);
 module.exports = OrderRouter;
