@@ -238,6 +238,34 @@ const orderController = {
             res.status(500).json({ result: false, statusCode: 500, message: 'Error updating dispatch details', error: error.message });
         }
     },
+
+
+    ChangeTheStatusOfTracking: async (req, res) => {
+        const { orderId, productId, status, note } = req.body;
+
+        try {
+            const order = await Order.findOne({ orderId });
+            if (!order) {
+                return res.status(404).json({ message: 'Order not found' });
+            }
+
+            const product = order.ProductDetails.find(p => p.ProductID === productId);
+            if (!product) {
+                return res.status(404).json({ message: 'Product not found in order' });
+            }
+
+            if (status === 'Out for Delivery') {
+                product.OrderTrackingDetails.Out_for_Delivery = true;
+                product.OrderTrackingDetails.Out_for_Delivery_Note = note || 'Your order is out for delivery';
+            }
+
+            await order.save();
+
+            res.status(200).json({ message: 'Order status updated successfully' });
+        } catch (error) {
+            res.status(500).json({ message: 'Server error', error });
+        }
+    },
 };
 
 module.exports = orderController;

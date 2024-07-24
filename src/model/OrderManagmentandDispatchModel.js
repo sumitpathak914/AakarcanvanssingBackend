@@ -8,6 +8,8 @@ const OrderTrackingDetailsSchema = new Schema({
     ShippedNote: { type: String, },
     Delivered: { type: Boolean, },
     DeliveredNote: { type: String, },
+    Out_for_Delivery: { type: Boolean, },
+    Out_for_Delivery_Note: { type: String, },
     Billing_Address: { type: String, },
     Shipping_Address: { type: String, }
 });
