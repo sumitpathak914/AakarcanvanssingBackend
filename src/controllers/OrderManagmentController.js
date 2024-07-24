@@ -176,8 +176,8 @@ const orderController = {
             res.status(500).json({ message: 'Server error', error });
         }
     },
-    
-     AddDetailsOfDispatch : async (req, res) => {
+
+    AddDetailsOfDispatch: async (req, res) => {
         try {
             const {
                 orderId, // Order ID
@@ -226,7 +226,8 @@ const orderController = {
             product.OrderTrackingDetails = {
                 ...product.OrderTrackingDetails,
                 EstimatedDeliveryDate: estimatedDeliveryDate,
-                Shipped: true
+                Shipped: true,
+                ShippedNote: "Your order was shipped successfully"
             };
 
             // Save the updated order
