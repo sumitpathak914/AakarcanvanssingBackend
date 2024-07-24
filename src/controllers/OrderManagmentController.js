@@ -257,7 +257,13 @@ const orderController = {
             if (status === 'Out for Delivery') {
                 product.OrderTrackingDetails.Out_for_Delivery = true;
                 product.OrderTrackingDetails.Out_for_Delivery_Note = note || 'Your order is out for delivery';
+            } else {
+                product.OrderTrackingDetails.Delivered = true;
+                product.OrderTrackingDetails.DeliveredNote = note || 'Your Order has been Successfully Delivered';
+                product.dispatchShippingDetails.DispatchStatus = 'Completed';
             }
+           
+
 
             await order.save();
 
