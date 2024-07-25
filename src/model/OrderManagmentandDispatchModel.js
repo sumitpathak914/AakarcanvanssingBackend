@@ -23,6 +23,7 @@ const DispatchShippingDetailsSchema = new Schema({
     TaxAndDuties: { type: String, },
     Insurance: { type: String, },
     RefundStatus: { type: String, },
+    RefundReasons: { type: String, },
     OrderStatus: { type: String, },
     weight: { type: String, },
     numberOfItems: { type: String, },
