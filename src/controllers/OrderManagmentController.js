@@ -258,6 +258,8 @@ const orderController = {
                 product.OrderTrackingDetails.Out_for_Delivery = true;
                 product.OrderTrackingDetails.Out_for_Delivery_Note = note || 'Your order is out for delivery';
             } else {
+                product.OrderTrackingDetails.Out_for_Delivery = true;
+                product.OrderTrackingDetails.Out_for_Delivery_Note = note || 'Your order is out for delivery';
                 product.OrderTrackingDetails.Delivered = true;
                 product.OrderTrackingDetails.DeliveredNote = note || 'Your Order has been Successfully Delivered';
                 product.dispatchShippingDetails.DispatchStatus = 'Completed';
@@ -272,6 +274,46 @@ const orderController = {
             res.status(500).json({ message: 'Server error', error });
         }
     },
+
+    ChangeReturnOrderStatus: async (req, res) => {
+        const { orderId, productId, action, reason } = req.body;
+
+        if (!orderId || !productId || !action) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        }
+
+        try {
+            // Find the order by ID
+            const order = await Order.findOne({ orderId });
+
+            if (!order) {
+                return res.status(404).json({ message: 'Order not found' });
+            }
+
+            // Find the product within the order
+            const product = order.ProductDetails.find(p => p.ProductID === productId);
+
+            if (!product) {
+                return res.status(404).json({ message: 'Product not found in the order' });
+            }
+            if (action === "ApproveRefund") {
+                product.dispatchShippingDetails.RefundStatus = 'Refund List';
+            } else {
+                product.dispatchShippingDetails.RefundStatus = 'Rejected';
+                product.dispatchShippingDetails.RejectRefundReasons = reason ;
+            }
+            // Update the refund status
+            
+
+            // Save the order with updated refund status
+            await order.save();
+
+            res.status(200).json({ message: 'Refund status updated successfully' });
+        } catch (error) {
+            console.error('Error updating refund status:', error);
+            res.status(500).json({ message: 'Server error' });
+        }
+    }
 };
 
 module.exports = orderController;

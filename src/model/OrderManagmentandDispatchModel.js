@@ -24,6 +24,7 @@ const DispatchShippingDetailsSchema = new Schema({
     Insurance: { type: String, },
     RefundStatus: { type: String, },
     RefundReasons: { type: String, },
+    RejectRefundReasons: { type: String, },
     RefundDate: { type: String, },
     OrderStatus: { type: String, },
     weight: { type: String, },
