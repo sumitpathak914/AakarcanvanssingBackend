@@ -39,7 +39,8 @@ const SupplierInfoSchema = new Schema({
     FactoryName: { type: String, },
     FactoryAddress: { type: String, },
     FactoryContact: { type: String, },
-    FactoryEmailID: { type: String, }
+    FactoryEmailID: { type: String, },
+    FactoryID: { type: String, }
 });
 
 const ProductDetailsSchema = new Schema({
