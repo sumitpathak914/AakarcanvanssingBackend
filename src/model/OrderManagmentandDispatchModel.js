@@ -44,6 +44,7 @@ const SupplierInfoSchema = new Schema({
 
 const ProductDetailsSchema = new Schema({
     ProductID: { type: String, },
+    SubCategory: { type: String, },
     OrderDate: { type: String, },
     PaymentDoneAmount: { type: String, },
     ProductName: { type: String, },
