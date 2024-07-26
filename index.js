@@ -15,6 +15,7 @@ const RegisterRouter = require('./src/routes/RegisterRoute');
 const UserRouter = require('./src/routes/UserRoute');
 
 const OrderRouter = require('./src/routes/OrderRoute');
+const Commissionrouter = require('./src/routes/CommissionSlabRoute');
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use('/Order', OrderRouter);
 app.use('/Factory', FactoryRoutes);
 app.use('', RegisterRouter);
 app.use('', UserRouter);
+app.use('/', Commissionrouter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
