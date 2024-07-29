@@ -21,7 +21,7 @@ exports.createCommissionSlab = async (req, res) => {
 exports.getCommissionSlabs = async (req, res) => {
     try {
         const slabs = await CommissionSlab.find();
-        res.status(200).json(slabs);
+        res.status(200).json({ result: true, statuscode: 200, CategoryList: slabs });
     } catch (error) {
         res.status(500).json({ message: 'Error fetching commission slabs', error });
     }
@@ -55,7 +55,7 @@ exports.updateCommissionSlab = async (req, res) => {
             return res.status(404).json({ message: 'Commission slab not found' });
         }
 
-        res.status(200).json({ result: false, statuscode: 404, CategoryList: slab });
+        res.status(200).json({ result: true, statuscode: 200, CategoryList: slab });
     } catch (error) {
         console.error('Error updating commission slab', error);
         res.status(500).json({ message: 'Server error' });
