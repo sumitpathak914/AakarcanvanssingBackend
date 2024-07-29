@@ -55,7 +55,7 @@ exports.updateCommissionSlab = async (req, res) => {
             return res.status(404).json({ message: 'Commission slab not found' });
         }
 
-        res.status(200).json(slab);
+        res.status(200).json({ result: false, statuscode: 404, CategoryList: slab });
     } catch (error) {
         console.error('Error updating commission slab', error);
         res.status(500).json({ message: 'Server error' });
