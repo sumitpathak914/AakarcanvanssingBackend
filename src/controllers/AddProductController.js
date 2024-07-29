@@ -27,7 +27,7 @@ const productController = {
                 Brand_Name,
                 selectedImages // base64 images
             } = req.body;
-
+            console.log(req.body)
             if (action === 1) {
                 if (!productName || !productDescription || !category || !subCategory || !unit || !price || !qualityVariety || !supplierName || !supplierContactNumber || !supplierCity || !Brand_Name) {
                     return res.status(400).json({ result: false, statusCode: 404, message: 'Please fill the Records' });
