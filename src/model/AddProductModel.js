@@ -17,6 +17,7 @@ const productSchema = new Schema({
     supplierCity: { type: String, default: '' },
     Brand_Name: { type: String, default: '' }, 
     supplierContactNumber: { type: String, default: '' },
+    CommissionPercentage: { type: String, default: '' },
     effectiveDate: { type: Date, default: null },
     expiryDate: { type: Date, default: null },
     qualityVariety: { type: String, default: '' },
