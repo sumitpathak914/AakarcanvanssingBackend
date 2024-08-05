@@ -27,7 +27,7 @@ const productController = {
                 Brand_Name,
                 selectedImages // base64 images
             } = req.body;
-            console.log(req.body)
+            
             if (action === 1) {
                 if (!productName || !productDescription || !category || !subCategory || !unit || !price ||  !supplierName || !supplierContactNumber || !supplierCity || !Brand_Name) {
                     return res.status(400).json({ result: false, statusCode: 404, message: 'Please fill the Records' });
@@ -71,7 +71,14 @@ const productController = {
             res.status(500).json({ result: false, statusCode: 500, message: err.message });
         }
     },
-
+    getAllProductsForEcommerce: async (req, res) => {
+        try {
+            const productsList = await Product.find({ isVisible: true });
+            res.status(200).json({ result: true, statusCode: 200, productsList });
+        } catch (err) {
+            res.status(500).json({ result: false, statusCode: 500, message: err.message });
+        }
+    },
     // Get a single product by ID
     getProductById: async (req, res) => {
         try {
