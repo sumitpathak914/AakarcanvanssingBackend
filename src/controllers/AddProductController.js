@@ -29,7 +29,7 @@ const productController = {
             } = req.body;
             console.log(req.body)
             if (action === 1) {
-                if (!productName || !productDescription || !category || !subCategory || !unit || !price || !qualityVariety || !supplierName || !supplierContactNumber || !supplierCity || !Brand_Name) {
+                if (!productName || !productDescription || !category || !subCategory || !unit || !price ||  !supplierName || !supplierContactNumber || !supplierCity || !Brand_Name) {
                     return res.status(400).json({ result: false, statusCode: 404, message: 'Please fill the Records' });
                 }
             }
@@ -57,7 +57,7 @@ const productController = {
             });
 
             await newProduct.save();
-            res.status(201).json({ result: true, statusCode: 200, message: 'Product created successfully', product: newProduct });
+            res.status(201).json({ result: true, statusCode: 200, message: 'Product created successfully', productList: newProduct });
         } catch (err) {
             res.status(400).json({ message: err.message });
         }
