@@ -95,7 +95,20 @@ const productController = {
         }
     },
 
+    getProductByIdForEcommerce: async (req, res) => {
+        try {
+            const productId = req.body.productId;
+            const product = await Product.findById(productId);
 
+            if (!product) {
+                return res.status(404).json({ message: 'Product not found' });
+            }
+
+            res.json({ result: true, statusCode: 200, SingleProductList: product });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
 
     updateProductById: async (req, res) => {
         const productId = req.params.id;

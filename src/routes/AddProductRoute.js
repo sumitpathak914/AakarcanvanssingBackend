@@ -23,6 +23,7 @@ router.post('/addProducts', upload.array('selectedImages', 3), productController
 router.get('/GetProducts', authenticateToken, productController.getAllProducts);
 router.get('/getEcommerceProducts', productController.getAllProductsForEcommerce);
 router.post('/GetSingleproducts', authenticateToken, productController.getProductById);
+router.post('/GetSingleproductsForEcommerce', productController.getProductByIdForEcommerce);
 router.put('/updateProduct/:id', authenticateToken, productController.updateProductById);
 router.delete('/products/:id', authenticateToken, productController.deleteProductById);
 router.post('/updateVisibility', authenticateToken, productController.updateVisibility);
