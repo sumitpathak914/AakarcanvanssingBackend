@@ -16,6 +16,8 @@ const UserRouter = require('./src/routes/UserRoute');
 
 const OrderRouter = require('./src/routes/OrderRoute');
 const Commissionrouter = require('./src/routes/CommissionSlabRoute');
+const ReviewRouter = require('./src/routes/UserReviewRoute');
+const Dealerrouter = require('./src/routes/DealerRoute');
 
 const app = express();
 
@@ -38,6 +40,8 @@ app.use('/Factory', FactoryRoutes);
 app.use('', RegisterRouter);
 app.use('', UserRouter);
 app.use('/', Commissionrouter);
+app.use('/reviews', ReviewRouter);
+app.use('/Dealer', Dealerrouter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 

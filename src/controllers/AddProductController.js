@@ -94,6 +94,24 @@ const productController = {
             res.status(500).json({ message: error.message });
         }
     },
+    getProductsByIdsForViewOrders: async (req, res) => {
+        try {
+            const productIds = req.body.productIds; // Expecting an array of IDs
+            if (!Array.isArray(productIds) || productIds.length === 0) {
+                return res.status(400).json({ message: 'Invalid product IDs' });
+            }
+
+            const products = await Product.find({ _id: { $in: productIds } });
+
+            if (!products || products.length === 0) {
+                return res.status(404).json({ message: 'Products not found' });
+            }
+
+            res.json({ result: true, statusCode: 200, products: products });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
 
     getProductByIdForEcommerce: async (req, res) => {
         try {

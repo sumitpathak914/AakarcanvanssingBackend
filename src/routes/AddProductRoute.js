@@ -29,6 +29,6 @@ router.delete('/products/:id', authenticateToken, productController.deleteProduc
 router.post('/updateVisibility', authenticateToken, productController.updateVisibility);
 router.post('/updatePrice', authenticateToken, productController.updatePrice);
 router.get('/FactoryProductList/:factoryId', authenticateToken, productController.getProductsByFactoryId);
-
+router.post('/ProductDetailsForOrder', productController.getProductsByIdsForViewOrders);
 
 module.exports = router;
