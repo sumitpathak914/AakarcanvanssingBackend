@@ -32,7 +32,7 @@ loginController.loginUser = async (req, res) => {
         jwt.sign(
             payload,
             "AakaarCanvansing@#123",
-            { expiresIn: " 8 days" },
+            { expiresIn: "2 days" },
             (err, token) => {
                 if (err) throw err;
                 if (user.role === "Factory") {
