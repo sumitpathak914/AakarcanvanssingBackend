@@ -2,18 +2,20 @@ const CommissionSlab = require('../model/CommissionModel');
 
 // Create a new commission slab
 exports.createCommissionSlab = async (req, res) => {
-    const { category, subcategory, commissionPerKg } = req.body;
+    const { category, subcategory, commissions } = req.body;
+
     try {
         const newSlab = new CommissionSlab({
             category,
             subcategory,
-            commissionPerKg,
-            isActive: true, // Set isActive to true by default
+            commissions,
         });
+
         await newSlab.save();
         res.status(201).json(newSlab);
     } catch (error) {
-        res.status(500).json({ message: 'Error creating commission slab', error });
+        console.error('Error creating commission slab', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 };
 
