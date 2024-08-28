@@ -25,11 +25,12 @@ const productController = {
                 action,
                 isVisible,
                 Brand_Name,
+                Commission,
                 selectedImages // base64 images
             } = req.body;
-            
+
             if (action === 1) {
-                if (!productName || !productDescription || !category || !subCategory || !unit || !price ||  !supplierName || !supplierContactNumber || !supplierCity || !Brand_Name) {
+                if (!productName || !productDescription || !category || !subCategory || !unit || !price || !supplierName || !supplierContactNumber || !supplierCity || !Brand_Name) {
                     return res.status(400).json({ result: false, statusCode: 404, message: 'Please fill the Records' });
                 }
             }
@@ -53,6 +54,7 @@ const productController = {
                 productCode,
                 action,
                 isVisible,
+                Commission,
                 Brand_Name
             });
 

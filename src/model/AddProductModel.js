@@ -2,6 +2,14 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const commissionSchema = new Schema({
+    dealer30Kg: { type: Number, default: 0 },
+    supplier30Kg: { type: Number, default: 0 },
+    dealer50Kg: { type: Number, default: 0 },
+    supplier50Kg: { type: Number, default: 0 },
+    dealer70Kg: { type: Number, default: 0 },
+    supplier70Kg: { type: Number, default: 0 }
+});
 // Define Product Schema
 const productSchema = new Schema({
     productName: { type: String, required: true },
@@ -15,15 +23,15 @@ const productSchema = new Schema({
     supplierName: { type: String, default: '' },
     FactoryId: { type: String, default: '' },
     supplierCity: { type: String, default: '' },
-    Brand_Name: { type: String, default: '' }, 
+    Brand_Name: { type: String, default: '' },
     supplierContactNumber: { type: String, default: '' },
-    CommissionPercentage: { type: String, default: '' },
     effectiveDate: { type: Date, default: null },
     expiryDate: { type: Date, default: null },
     qualityVariety: { type: String, default: '' },
     isVisible: { type: Boolean, default: '' },
     action: { type: String, default: '' },
-    selectedImages: [{ type: String }]  // Assuming these are URLs or paths to images
+    selectedImages: [{ type: String }],  // Assuming these are URLs or paths to images
+    Commission: commissionSchema
 });
 
 // Create a model based on the schema

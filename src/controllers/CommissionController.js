@@ -20,6 +20,15 @@ exports.createCommissionSlab = async (req, res) => {
 };
 
 // Get all commission slabs
+exports.getCommissionSlabsForAddProduct = async (req, res) => {
+    try {
+        const slabs = await CommissionSlab.find({ isActive: true });
+        res.status(200).json({ result: true, statuscode: 200, CategoryList: slabs });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching commission slabs', error });
+    }
+};
+
 exports.getCommissionSlabs = async (req, res) => {
     try {
         const slabs = await CommissionSlab.find();
