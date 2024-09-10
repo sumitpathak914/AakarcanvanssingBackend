@@ -25,11 +25,12 @@ const productController = {
                 action,
                 isVisible,
                 Brand_Name,
+                Commission,
                 selectedImages // base64 images
             } = req.body;
 
             if (action === 1) {
-                if (!productName || !productDescription || !category || !subCategory || !unit || !price || !qualityVariety || !supplierName || !supplierContactNumber || !supplierCity || !Brand_Name) {
+                if (!productName || !productDescription || !category || !subCategory || !unit || !price || !supplierName || !supplierContactNumber || !supplierCity || !Brand_Name) {
                     return res.status(400).json({ result: false, statusCode: 404, message: 'Please fill the Records' });
                 }
             }
@@ -53,11 +54,12 @@ const productController = {
                 productCode,
                 action,
                 isVisible,
+                Commission,
                 Brand_Name
             });
 
             await newProduct.save();
-            res.status(201).json({ result: true, statusCode: 200, message: 'Product created successfully', product: newProduct });
+            res.status(201).json({ result: true, statusCode: 200, message: 'Product created successfully', productList: newProduct });
         } catch (err) {
             res.status(400).json({ message: err.message });
         }
@@ -71,7 +73,14 @@ const productController = {
             res.status(500).json({ result: false, statusCode: 500, message: err.message });
         }
     },
-
+    getAllProductsForEcommerce: async (req, res) => {
+        try {
+            const productsList = await Product.find({ isVisible: true });
+            res.status(200).json({ result: true, statusCode: 200, productsList });
+        } catch (err) {
+            res.status(500).json({ result: false, statusCode: 500, message: err.message });
+        }
+    },
     // Get a single product by ID
     getProductById: async (req, res) => {
         try {
@@ -87,8 +96,39 @@ const productController = {
             res.status(500).json({ message: error.message });
         }
     },
+    getProductsByIdsForViewOrders: async (req, res) => {
+        try {
+            const productIds = req.body.productIds; // Expecting an array of IDs
+            if (!Array.isArray(productIds) || productIds.length === 0) {
+                return res.status(400).json({ message: 'Invalid product IDs' });
+            }
 
+            const products = await Product.find({ _id: { $in: productIds } });
 
+            if (!products || products.length === 0) {
+                return res.status(404).json({ message: 'Products not found' });
+            }
+
+            res.json({ result: true, statusCode: 200, products: products });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+
+    getProductByIdForEcommerce: async (req, res) => {
+        try {
+            const productId = req.body.productId;
+            const product = await Product.findById(productId);
+
+            if (!product) {
+                return res.status(404).json({ message: 'Product not found' });
+            }
+
+            res.json({ result: true, statusCode: 200, SingleProductList: product });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
 
     updateProductById: async (req, res) => {
         const productId = req.params.id;

@@ -21,12 +21,14 @@ const upload = multer({ storage: storage });
 router.post('/addProducts', upload.array('selectedImages', 3), productController.createProduct); // Assuming 'selectedImages' is the field name for file upload
 
 router.get('/GetProducts', authenticateToken, productController.getAllProducts);
+router.get('/getEcommerceProducts', productController.getAllProductsForEcommerce);
 router.post('/GetSingleproducts', authenticateToken, productController.getProductById);
-router.put('/updateProduct/:id', productController.updateProductById);
+router.post('/GetSingleproductsForEcommerce', productController.getProductByIdForEcommerce);
+router.put('/updateProduct/:id', authenticateToken, productController.updateProductById);
 router.delete('/products/:id', authenticateToken, productController.deleteProductById);
 router.post('/updateVisibility', authenticateToken, productController.updateVisibility);
 router.post('/updatePrice', authenticateToken, productController.updatePrice);
 router.get('/FactoryProductList/:factoryId', authenticateToken, productController.getProductsByFactoryId);
-
+router.post('/ProductDetailsForOrder', productController.getProductsByIdsForViewOrders);
 
 module.exports = router;

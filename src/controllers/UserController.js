@@ -28,15 +28,14 @@ const userController = {
             // Find users with the role "Factory"
             const users = await User.find({ role: "Factory" });
 
-            // Filter out users that do not have a products array or have an empty products array
-            const filteredUsers = users.filter(user => Array.isArray(user.products) && user.products.length > 0);
-
-            res.json({ result: true, statusCode: 200, FactoryList: filteredUsers });
+            // Send all users with the role "Factory" in the response
+            res.json({ result: true, statusCode: 200, FactoryList: users });
         } catch (err) {
             console.error(err.message);
             res.status(500).send("Server Error");
         }
     },
+
     getFactoryById: async (req, res) => {
         const { id } = req.params;
 
