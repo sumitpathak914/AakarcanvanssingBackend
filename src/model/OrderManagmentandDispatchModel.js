@@ -6,14 +6,27 @@ const OrderTrackingDetailsSchema = new Schema({
     PlaceNote: { type: String, },
     Shipped: { type: Boolean, },
     ShippedNote: { type: String, },
-    Delivery: { type: Boolean, },
-    DeliveryNote: { type: String, },
     Delivered: { type: Boolean, },
-    DeliveredNote: { type: String, }
+    DeliveredNote: { type: String, },
+    Out_for_Delivery: { type: Boolean, },
+    Out_for_Delivery_Note: { type: String, },
+});
+const CommissionSchema = new Schema({
+    dealer30Kg: { type: Number, required: true },
+    supplier30Kg: { type: Number, required: true },
+    dealer50Kg: { type: Number, required: true },
+    supplier50Kg: { type: Number, required: true },
+    dealer70Kg: { type: Number, required: true },
+    supplier70Kg: { type: Number, required: true }
+});
+
+const SelectionSchema = new Schema({
+    size: { type: String, required: true },
+    quantity: { type: Number, required: true }
 });
 
 const DispatchShippingDetailsSchema = new Schema({
-    DispatchID: { type: Number, },
+    DispatchID: { type: String, },
     EstimatedDeliveryDate: { type: Date, },
     DriverName: { type: String, },
     ContactNumber: { type: String, },
@@ -21,31 +34,34 @@ const DispatchShippingDetailsSchema = new Schema({
     TaxAndDuties: { type: String, },
     Insurance: { type: String, },
     RefundStatus: { type: String, },
-    orderStatus: { type: String, },
-    orderCancelReason: { type: String, },
-    orderPendingReason: { type: String, },
+    RefundReasons: { type: String, },
+    RejectRefundReasons: { type: String, },
+    RefundDate: { type: String, },
+    OrderStatus: { type: String, },
+    weight: { type: String, },
+    Category: { type: String, },
+    DispatchStatus: { type: String, },
+    OrderCancelReason: { type: String, },
+    OrderPendingReason: { type: String, },
 });
 
 const SupplierInfoSchema = new Schema({
     FactoryName: { type: String, },
     FactoryAddress: { type: String, },
     FactoryContact: { type: String, },
-    FactoryEmailID: { type: String, }
 });
 
 const ProductDetailsSchema = new Schema({
     ProductID: { type: String, },
-    Supplier: { type: String, },
+    OrderDate: { type: String, },
+    ProductName: { type: String, },
     MRP: { type: String, },
     QTY: { type: String, },
-    Total: { type: String, },
-    Payment: { type: String, },
-    Duepayment: { type: String, },
-    weight: { type: String, },
-    ItemCategory: { type: String, },
+    selection: [SelectionSchema],
     dispatchShippingDetails: { type: DispatchShippingDetailsSchema, },
     OrderTrackingDetails: { type: OrderTrackingDetailsSchema, },
-    SupplierInfo: { type: SupplierInfoSchema, }
+    SupplierInfo: { type: SupplierInfoSchema, },
+    commission: { type: CommissionSchema, required: true }
 });
 
 const CustomerInfoSchema = new Schema({
@@ -53,10 +69,16 @@ const CustomerInfoSchema = new Schema({
     ShopName: { type: String, },
     ContactNo: { type: String, },
     EmailID: { type: String, },
-    PaymentMethod: { type: String, }
+    Billing_Address: { type: String, },
+    Shipping_Address: { type: String, },
 });
 
 const OrderSchema = new Schema({
+    orderId: { type: String, },
+    Total: { type: String, },
+    PaymentDoneAmount: { type: String, },
+    PaymentMethod: { type: String, },
+    Duepayment: { type: String, },
     customerInfo: { type: CustomerInfoSchema, },
     ProductDetails: { type: [ProductDetailsSchema], } // Array of products
 });
