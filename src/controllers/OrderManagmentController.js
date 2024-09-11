@@ -45,7 +45,11 @@ const orderController = {
                 result: true,
                 statusCode: 200,
                 message: 'Order details fetched successfully.',
-                orderId: order.orderId,  // Include the orderId in the response
+                orderId: order.orderId,
+                Total: order.Total,
+                PaymentDoneAmount: order.PaymentDoneAmount,
+                PaymentMethod: order.PaymentMethod,
+                Duepayment: order.Duepayment,
                 ProductDetails: product,
                 customerInfo: customerInfo,
             });
@@ -264,7 +268,7 @@ const orderController = {
                 product.OrderTrackingDetails.DeliveredNote = note || 'Your Order has been Successfully Delivered';
                 product.dispatchShippingDetails.DispatchStatus = 'Completed';
             }
-           
+
 
 
             await order.save();
@@ -300,10 +304,10 @@ const orderController = {
                 product.dispatchShippingDetails.RefundStatus = 'Refund List';
             } else {
                 product.dispatchShippingDetails.RefundStatus = 'Rejected';
-                product.dispatchShippingDetails.RejectRefundReasons = reason ;
+                product.dispatchShippingDetails.RejectRefundReasons = reason;
             }
             // Update the refund status
-            
+
 
             // Save the order with updated refund status
             await order.save();
