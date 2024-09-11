@@ -58,6 +58,7 @@ const ProductDetailsSchema = new Schema({
     ProductName: { type: String, },
     MRP: { type: String, },
     QTY: { type: String, },
+    discount: { type: String, },
     selection: [SelectionSchema],
     dispatchShippingDetails: { type: DispatchShippingDetailsSchema, },
     OrderTrackingDetails: { type: OrderTrackingDetailsSchema, },
