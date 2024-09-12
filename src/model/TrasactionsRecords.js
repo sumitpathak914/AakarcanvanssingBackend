@@ -47,6 +47,14 @@ const ProductDetailsSchema = new Schema({
     SupplierInfo: { type: SupplierInfoSchema },
 });
 
+const TransactionRecordsData = new Schema({
+    TransactionID: { type: String, default: uuidv4 },
+    PaymentDoneAmount: { type: String },
+    PaymentMethod: { type: String },
+    Duepayment: { type: String },
+    Total: { type: String },
+});
+
 const CustomerInfoSchema = new Schema({
     CustomerName: { type: String },
     ShopName: { type: String },
@@ -57,14 +65,13 @@ const CustomerInfoSchema = new Schema({
 });
 
 const TransactionRecordSchema = new Schema({
-    TransactionID: { type: String, default: uuidv4 }, // Automatically generate a unique ID
+   // Automatically generate a unique ID
     orderId: { type: String },
+    Date: { type: String },
     Total: { type: String },
-    PaymentDoneAmount: { type: String },
-    PaymentMethod: { type: String },
-    Duepayment: { type: String },
     customerInfo: { type: CustomerInfoSchema },
-    ProductDetails: [ProductDetailsSchema]
+    ProductDetails: [ProductDetailsSchema],
+     TransactionData: [TransactionRecordsData]
 });
 
 const TransactionRecord = mongoose.model('TransactionRecord', TransactionRecordSchema);
