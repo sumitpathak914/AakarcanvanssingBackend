@@ -4,8 +4,8 @@
 // const Schema = mongoose.Schema;
 
 // const SelectionSchema = new Schema({
-//     size: { type: String, required: true },
-//     quantity: { type: Number, required: true }
+//     size: { type: String,  },
+//     quantity: { type: Number,  }
 // });
 
 // const DispatchShippingDetailsSchema = new Schema({
@@ -84,8 +84,8 @@ const Schema = mongoose.Schema;
 
 // Schema for selection details
 const SelectionSchema = new Schema({
-    size: { type: String, required: true },
-    quantity: { type: Number, required: true }
+    size: { type: String,  },
+    quantity: { type: Number,  }
 });
 
 // Schema for dispatch and shipping details
@@ -111,19 +111,19 @@ const DispatchShippingDetailsSchema = new Schema({
 
 // Schema for supplier information
 const SupplierInfoSchema = new Schema({
-    FactoryName: { type: String, required: true },
-    FactoryAddress: { type: String, required: true },
-    FactoryContact: { type: String, required: true },
-    FactoryId: { type: String, required: true },
+    FactoryName: { type: String,  },
+    FactoryAddress: { type: String,  },
+    FactoryContact: { type: String,  },
+    FactoryId: { type: String,  },
 });
 
 // Schema for product details
 const ProductDetailsSchema = new Schema({
-    ProductID: { type: String, required: true },
-    OrderDate: { type: Date, required: true },
-    ProductName: { type: String, required: true },
-    MRP: { type: Number, required: true },
-    QTY: { type: Number, required: true },
+    ProductID: { type: String,  },
+    OrderDate: { type: Date,  },
+    ProductName: { type: String,  },
+    MRP: { type: Number,  },
+    QTY: { type: Number,  },
     discount: { type: Number, default: 0 },
     selection: [SelectionSchema],
     dispatchShippingDetails: DispatchShippingDetailsSchema,
@@ -133,27 +133,27 @@ const ProductDetailsSchema = new Schema({
 // Schema for transaction records
 const TransactionRecordsData = new Schema({
     TransactionID: { type: String, default: uuidv4 },
-    PaymentDoneAmount: { type: Number, required: true },
-    PaymentMethod: { type: String, required: true },
-    Duepayment: { type: Number, required: true },
-    Total: { type: Number, required: true },
+    PaymentDoneAmount: { type: Number,  },
+    PaymentMethod: { type: String,  },
+    Duepayment: { type: Number,  },
+    Total: { type: Number,  },
 });
 
 // Schema for customer information
 const CustomerInfoSchema = new Schema({
-    CustomerName: { type: String, required: true },
-    ShopName: { type: String, required: true },
-    ContactNo: { type: String, required: true },
-    EmailID: { type: String, required: true },
-    Billing_Address: { type: String, required: true },
-    Shipping_Address: { type: String, required: true },
+    CustomerName: { type: String,  },
+    ShopName: { type: String,  },
+    ContactNo: { type: String,  },
+    EmailID: { type: String,  },
+    Billing_Address: { type: String,  },
+    Shipping_Address: { type: String,  },
 });
 
 // Main schema for transaction records
 const TransactionRecordSchema = new Schema({
-    orderId: { type: String, required: true },
+    orderId: { type: String,  },
     Date: { type: Date, default: Date.now },
-    Total: { type: Number, required: true },
+    Total: { type: Number,  },
     customerInfo: CustomerInfoSchema,
     ProductDetails: [ProductDetailsSchema],
     TransactionData: [TransactionRecordsData]
