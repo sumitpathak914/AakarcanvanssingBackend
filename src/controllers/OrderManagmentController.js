@@ -6,7 +6,24 @@ const orderController = {
             const order = new Order(req.body);
             await order.save();
             // Create a new TransactionRecord instance
-            const transactionRecord = new TransactionRecord(req.body);
+            const {
+                orderId,
+                Date,
+                Total,
+                customerInfo,
+                ProductDetails,
+                TransactionData
+            } = req.body;
+
+            // Create a new TransactionRecord instance with the data
+            const transactionRecord = new TransactionRecord({
+                orderId,
+                Date: Date ? new Date(Date) : undefined, // Ensure Date is a Date object
+                Total,
+                customerInfo,
+                ProductDetails,
+                TransactionData
+            });
 
             // Save the transaction record
             await transactionRecord.save();
