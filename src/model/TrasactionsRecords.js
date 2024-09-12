@@ -3,6 +3,13 @@ const { v4: uuidv4 } = require('uuid'); // Import uuid
 
 const Schema = mongoose.Schema;
 
+const getISTDate = () => {
+    const now = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC +5:30
+    const istDate = new Date(now.getTime() + istOffset);
+    return istDate;
+};
+
 const SelectionSchema = new Schema({
     size: { type: String, required: true },
     quantity: { type: Number, required: true }
@@ -53,6 +60,7 @@ const TransactionRecordsData = new Schema({
     PaymentMethod: { type: String },
     Duepayment: { type: String },
     Total: { type: String },
+    TransactionDate: { type: Date, default: getISTDate },
 });
 
 const CustomerInfoSchema = new Schema({
