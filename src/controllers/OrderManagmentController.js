@@ -1,10 +1,11 @@
 const Order = require('../model/OrderManagmentandDispatchModel');
-
+const TransactionRecord = require('../model/TrasactionsRecords');
 const orderController = {
     CreateOrder: async (req, res) => {
         try {
             const order = new Order(req.body);
             await order.save();
+            await TransactionRecord.save();
             res.status(201).json({ result: true, statusCode: 201, message: 'Order successfully.' });
         } catch (err) {
             res.status(400).json({ result: false, statusCode: 400, error: err.message });
