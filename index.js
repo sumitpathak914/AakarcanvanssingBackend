@@ -18,6 +18,7 @@ const OrderRouter = require('./src/routes/OrderRoute');
 const Commissionrouter = require('./src/routes/CommissionSlabRoute');
 const ReviewRouter = require('./src/routes/UserReviewRoute');
 const Dealerrouter = require('./src/routes/DealerRoute');
+const transactionRouter = require('./src/routes/TrasactionRecordsRoute');
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use('', UserRouter);
 app.use('/', Commissionrouter);
 app.use('/reviews', ReviewRouter);
 app.use('/Dealer', Dealerrouter);
+app.use('/', transactionRouter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
