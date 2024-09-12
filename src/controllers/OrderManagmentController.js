@@ -6,23 +6,29 @@ const orderController = {
             const order = new Order(req.body);
             await order.save();
             // Create a new TransactionRecord instance
-            const {
-                orderId,
-                Date,
-                Total,
-                customerInfo,
-                ProductDetails,
-                TransactionData
-            } = req.body;
+            const { orderId, Total, PaymentDoneAmount, PaymentMethod, Duepayment, ProductDetails } = req.body;
 
-            // Create a new TransactionRecord instance with the data
+            // Create an array of TransactionRecordsData based on the provided data
+            const transactionData = [];
+
+            // Example of adding a transaction record (assuming one transaction per order)
+            if (PaymentDoneAmount && Total) {
+                transactionData.push({
+                    PaymentDoneAmount,
+                    PaymentMethod,
+                    Duepayment,
+                    Total
+                });
+            }
+
+            // Create a new TransactionRecord instance with the extracted data
             const transactionRecord = new TransactionRecord({
                 orderId,
-                Date: Date ? new Date(Date) : undefined, // Ensure Date is a Date object
+                Date: new Date(), // Use the current date or provide a specific date
                 Total,
-                customerInfo,
+                customerInfo: req.body.customerInfo,
                 ProductDetails,
-                TransactionData
+                TransactionData: transactionData // Add the constructed array here
             });
 
             // Save the transaction record
