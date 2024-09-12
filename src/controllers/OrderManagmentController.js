@@ -5,7 +5,11 @@ const orderController = {
         try {
             const order = new Order(req.body);
             await order.save();
-            await TransactionRecord.save();
+            // Create a new TransactionRecord instance
+            const transactionRecord = new TransactionRecord(req.body);
+
+            // Save the transaction record
+            await transactionRecord.save();
             res.status(201).json({ result: true, statusCode: 201, message: 'Order successfully.' });
         } catch (err) {
             res.status(400).json({ result: false, statusCode: 400, error: err.message });
