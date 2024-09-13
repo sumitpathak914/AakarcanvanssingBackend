@@ -63,7 +63,11 @@ const ProductDetailsSchema = new Schema({
     dispatchShippingDetails: { type: DispatchShippingDetailsSchema, },
     OrderTrackingDetails: { type: OrderTrackingDetailsSchema, },
     SupplierInfo: { type: SupplierInfoSchema, },
-    commission: { type: CommissionSchema, required: true }
+    commission: { type: CommissionSchema, required: true },
+    selectedImages: {
+        type: [String], // Array of strings (image paths)
+        default: []
+    },
 });
 
 const CustomerInfoSchema = new Schema({
@@ -107,6 +111,7 @@ const OrderSchema = new Schema({
     Duepayment: { type: String, },
     PaymentDetails: { type: PaymentDetailsSchema },
     customerInfo: { type: CustomerInfoSchema, },
+    
     ProductDetails: { type: [ProductDetailsSchema], } // Array of products
 });
 
