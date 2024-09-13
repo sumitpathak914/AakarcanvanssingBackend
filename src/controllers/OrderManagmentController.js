@@ -141,7 +141,33 @@ const orderController = {
         }
     },
 
+    getOrdersByShopId: async (req, res) => {
+        try {
+            const { ShopId } = req.params;
 
+            // Fetch orders where ShopId matches
+            const orders = await Order.find({ ShopId });
+
+            if (orders.length > 0) {
+                res.status(200).json({
+                    success: true,
+                    message: 'Orders found',
+                    OrderList: orders
+                });
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: 'No orders found for the provided ShopId'
+                });
+            }
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: 'Server error',
+                error: error.message
+            });
+        }
+    },
     GetOrderDetails: async (req, res) => {
         try {
             const { orderId, productId } = req.body;
@@ -344,13 +370,13 @@ const orderController = {
                 numberOfItems: numberOfItems,
                 Category: Category,
                 OrderStatus: 'Shipped',
-                DispatchStatus: 'Dispatched'
+                DispatchStatus: 'Dispatched',
+                EstimatedDeliveryDate: estimatedDeliveryDate
             };
 
             // Update order tracking details
             product.OrderTrackingDetails = {
                 ...product.OrderTrackingDetails,
-                EstimatedDeliveryDate: estimatedDeliveryDate,
                 Shipped: true,
                 ShippedNote: "Your order was shipped successfully"
             };
