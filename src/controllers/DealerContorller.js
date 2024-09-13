@@ -5,7 +5,8 @@ const jwt = require('jsonwebtoken');
 const FactoryController = {
 
     SaveDealer: async (req, res) => {
-        const { shopName, contactPerson, email, gstNumber, password, confirmPassword } = req.body;
+        const { shopName, contactPerson, email, gstNumber, password, confirmPassword, FSSAINumber
+} = req.body;
 
         // Check for missing fields
         if (!shopName) {
@@ -40,7 +41,7 @@ const FactoryController = {
             }
 
             // Save new dealer
-            const dealer = new Dealer({ shopName, contactPerson, email, gstNumber, password, confirmPassword });
+            const dealer = new Dealer({ shopName, contactPerson, email, gstNumber, password, confirmPassword, FSSAINumber });
             await dealer.save();
 
             res.status(201).json({ result: true, statusCode: 201, message: 'Dealer registered successfully' });

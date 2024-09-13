@@ -75,12 +75,37 @@ const CustomerInfoSchema = new Schema({
     Shipping_Address: { type: String, },
 });
 
+// Payment Details schema for Bank payments
+const BankPaymentDetailsSchema = new Schema({
+    BankName: { type: String },
+    AccountHolderName: { type: String },
+    AccountNumber: { type: String },
+    IFSCCode: { type: String },
+    PaymentAmount: { type: String }
+});
+
+// Payment Details schema for Cheque payments
+const ChequePaymentDetailsSchema = new Schema({
+    BankName: { type: String },
+    AccountHolderName: { type: String },
+    ChequeNumber: { type: String },
+    PaymentAmount: { type: String }
+});
+
+// Main PaymentDetails schema with conditional embedded fields
+const PaymentDetailsSchema = new Schema({
+    PaymentMethod: { type: String, }, // 'bank' or 'cheque'
+    BankDetails: BankPaymentDetailsSchema, // For 'bank' method
+    ChequeDetails: ChequePaymentDetailsSchema // For 'cheque' method
+});
 const OrderSchema = new Schema({
     orderId: { type: String, },
     Total: { type: String, },
+    ShopId: { type: String, },
     PaymentDoneAmount: { type: String, },
     PaymentMethod: { type: String, },
     Duepayment: { type: String, },
+    PaymentDetails: { type: PaymentDetailsSchema },
     customerInfo: { type: CustomerInfoSchema, },
     ProductDetails: { type: [ProductDetailsSchema], } // Array of products
 });

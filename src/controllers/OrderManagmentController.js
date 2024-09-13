@@ -1,40 +1,133 @@
 const Order = require('../model/OrderManagmentandDispatchModel');
 const TransactionRecord = require('../model/TrasactionsRecords');
 const orderController = {
+    //  CreateOrder : async (req, res) => {
+    //     try {
+    //         // Destructure the relevant fields from the request body
+    //         const { orderId, Total, PaymentDoneAmount, PaymentMethod, Duepayment, ProductDetails, customerInfo, PaymentDetails } = req.body;
+
+    //         // Determine which payment details to include based on PaymentMethod
+    //         let paymentDetails;
+
+    //         if (PaymentMethod === 'bank') {
+    //             paymentDetails = {
+    //                 BankDetails: {
+    //                     BankName: PaymentDetails.BankName,
+    //                     AccountHolderName: PaymentDetails.AccountHolderName,
+    //                     AccountNumber: PaymentDetails.AccountNumber,
+    //                     IFSCCode: PaymentDetails.IFSCCode,
+    //                     PaymentAmount: PaymentDetails.PaymentAmount
+    //                 }
+    //             };
+    //         } else if (PaymentMethod === 'cheque') {
+    //             paymentDetails = {
+    //                 ChequeDetails: {
+    //                     BankName: PaymentDetails.BankName,
+    //                     AccountHolderName: PaymentDetails.AccountHolderName,
+    //                     ChequeNumber: PaymentDetails.ChequeNumber,
+    //                     PaymentAmount: PaymentDetails.PaymentAmount
+    //                 }
+    //             };
+    //         } else {
+    //             // If PaymentMethod is not recognized, respond with an error
+    //             return res.status(400).json({ result: false, statusCode: 400, error: 'Invalid payment method.' });
+    //         }
+
+    //         // Create a new Order instance with the payment details
+    //         const order = new Order({
+    //             ...req.body,
+    //             PaymentDetails: paymentDetails // Add the determined payment details
+    //         });
+
+    //         // Save the order to the database
+    //         await order.save();
+
+    //         // Create an array of TransactionRecordsData based on the provided data
+    //         const transactionData = [];
+
+    //         // Add a transaction record if PaymentDoneAmount and Total are provided
+    //         if (PaymentDoneAmount && Total) {
+    //             transactionData.push({
+    //                 PaymentDoneAmount,
+    //                 PaymentMethod,
+    //                 Duepayment,
+    //                 Total
+    //             });
+    //         }
+
+    //         // Create a new TransactionRecord instance with the extracted data
+    //         const transactionRecord = new TransactionRecord({
+    //             orderId,
+    //             Date: new Date(), // Use the current date or provide a specific date
+    //             Total,
+    //             customerInfo,
+    //             ProductDetails,
+    //             TransactionData: transactionData // Add the constructed array here
+    //         });
+
+    //         // Save the transaction record to the database
+    //         await transactionRecord.save();
+
+    //         // Respond with a success message
+    //         res.status(201).json({ result: true, statusCode: 201, message: 'Order created successfully.' });
+    //     } catch (err) {
+    //         // Respond with an error message
+    //         res.status(400).json({ result: false, statusCode: 400, error: err.message });
+    //     }
+    // },
+
     CreateOrder: async (req, res) => {
         try {
-            const order = new Order(req.body);
+            // Destructure the relevant fields from the request body
+            const { orderId, Total, PaymentDoneAmount, PaymentMethod, Duepayment, ProductDetails, customerInfo, PaymentDetails } = req.body;
+
+            // Determine which payment details to include based on PaymentMethod
+            const transactionData = {
+                PaymentDoneAmount,
+                PaymentMethod,
+                Duepayment,
+                Total,
+                BankDetails: PaymentMethod === 'bank' ? {
+                    BankName: PaymentDetails.BankName,
+                    AccountHolderName: PaymentDetails.AccountHolderName,
+                    AccountNumber: PaymentDetails.AccountNumber,
+                    IFSCCode: PaymentDetails.IFSCCode,
+                    PaymentAmount: PaymentDetails.PaymentAmount
+                } : undefined,
+                ChequeDetails: PaymentMethod === 'cheque' ? {
+                    BankName: PaymentDetails.BankName,
+                    AccountHolderName: PaymentDetails.AccountHolderName,
+                    ChequeNumber: PaymentDetails.ChequeNumber,
+                    PaymentAmount: PaymentDetails.PaymentAmount
+                } : undefined
+            };
+
+            // Create a new Order instance with the payment details
+            const order = new Order({
+                ...req.body,
+                PaymentDetails: transactionData // Add the determined payment details
+            });
+
+            // Save the order to the database
             await order.save();
-            // Create a new TransactionRecord instance
-            const { orderId, Total, PaymentDoneAmount, PaymentMethod, Duepayment, ProductDetails } = req.body;
-
-            // Create an array of TransactionRecordsData based on the provided data
-            const transactionData = [];
-
-            // Example of adding a transaction record (assuming one transaction per order)
-            if (PaymentDoneAmount && Total) {
-                transactionData.push({
-                    PaymentDoneAmount,
-                    PaymentMethod,
-                    Duepayment,
-                    Total
-                });
-            }
 
             // Create a new TransactionRecord instance with the extracted data
             const transactionRecord = new TransactionRecord({
                 orderId,
                 Date: new Date(), // Use the current date or provide a specific date
                 Total,
-                customerInfo: req.body.customerInfo,
+                customerInfo,
                 ProductDetails,
-                TransactionData: transactionData // Add the constructed array here
+                TransactionData: [transactionData] // Add the constructed array here
             });
 
-            // Save the transaction record
+            // Save the transaction record to the database
             await transactionRecord.save();
-            res.status(201).json({ result: true, statusCode: 201, message: 'Order successfully.' });
+
+            // Respond with a success message
+            res.status(201).json({ result: true, statusCode: 201, message: 'Order created successfully.' });
         } catch (err) {
+            // Respond with an error message
             res.status(400).json({ result: false, statusCode: 400, error: err.message });
         }
     },
