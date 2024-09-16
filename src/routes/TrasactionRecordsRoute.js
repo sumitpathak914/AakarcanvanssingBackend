@@ -14,6 +14,6 @@ const authenticateToken = require('../middleware/auth');
 transactionRouter.get('/transactions', authenticateToken, transactionController.getAllTransactions);
 
 // Route to get transaction records by order ID
-transactionRouter.get('/transactions/:orderId', authenticateToken, transactionController.getTransactionByOrderId);
+transactionRouter.get('/transactions/:orderId', transactionController.getTransactionByOrderId);
 
 module.exports = transactionRouter;
