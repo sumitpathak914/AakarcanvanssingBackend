@@ -8,7 +8,7 @@ const authenticateToken = require('../middleware/auth');
 
 // Define routes with multer middleware
 
-OrderRouter.post('/CreateOrder', authenticateToken, OrderManagmentController.CreateOrder);
+OrderRouter.post('/CreateOrder', OrderManagmentController.CreateOrder);
 OrderRouter.get('/GetAllOrderDetails', authenticateToken, OrderManagmentController.GetAllOrdersDetails);
 OrderRouter.post('/GetOrderDetails', authenticateToken, OrderManagmentController.GetOrderDetails);
 OrderRouter.post('/UpdateStatus', authenticateToken, OrderManagmentController.UpdateTheOrderStatus);
