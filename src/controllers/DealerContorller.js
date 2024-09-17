@@ -5,8 +5,7 @@ const jwt = require('jsonwebtoken');
 const FactoryController = {
 
     SaveDealer: async (req, res) => {
-        const { shopName, contactPerson, email, gstNumber, password, confirmPassword, FSSAINumber
-} = req.body;
+        const { shopName, contactPerson, email, gstNumber, password, confirmPassword, FSSAINumber, contactNumber } = req.body;
 
         // Check for missing fields
         if (!shopName) {
@@ -27,6 +26,9 @@ const FactoryController = {
         if (!confirmPassword) {
             return res.status(400).json({ result: false, statusCode: 400, message: 'Confirm password is required' });
         }
+        if (!contactNumber) {
+            return res.status(400).json({ result: false, statusCode: 400, message: 'Contact number is required' });
+        }
 
         // Check if passwords match
         if (password !== confirmPassword) {
@@ -37,11 +39,21 @@ const FactoryController = {
             // Check if dealer already exists
             const existingDealer = await Dealer.findOne({ email });
             if (existingDealer) {
-                return res.status(400).json({ result: false, statusCode: 400, message: 'Dealer already exists' });
+                return res.status(400).json({ result: false, statusCode: 400, message: 'Email is already in use' });
             }
 
+            // Create a new dealer instance
+            const dealer = new Dealer({
+                shopName,
+                contactPerson,
+                email,
+                gstNumber,
+                password, // Ensure you hash this password before saving
+                FSSAINumber,
+                contactNumber
+            });
+
             // Save new dealer
-            const dealer = new Dealer({ shopName, contactPerson, email, gstNumber, password, confirmPassword, FSSAINumber });
             await dealer.save();
 
             res.status(201).json({ result: true, statusCode: 201, message: 'Dealer registered successfully' });
@@ -50,6 +62,7 @@ const FactoryController = {
             res.status(500).json({ result: false, statusCode: 500, message: 'Internal Server Error' });
         }
     },
+
     LoginDealer: async (req, res) => {
         const { email, password } = req.body;
 

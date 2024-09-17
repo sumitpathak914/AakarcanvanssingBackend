@@ -27,7 +27,8 @@ const dealerSchema = new mongoose.Schema({
     gstNumber: { type: String, required: true },
     FSSAINumber: { type: String, required: true },
     password: { type: String, required: true },
-    confirmPassword: { type: String, required: true },
+    contactNumber: { type: Number, required: true },
+    confirmPassword: { type: String, required: true }, 
     isAllowLogin: { type: Boolean, default: false }
 });
 
