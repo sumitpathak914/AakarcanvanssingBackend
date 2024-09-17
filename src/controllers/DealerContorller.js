@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const FactoryController = {
 
-    SaveDealer: async (req, res) => {
+     SaveDealer : async (req, res) => {
         const { shopName, contactPerson, email, gstNumber, password, confirmPassword, FSSAINumber, contactNumber } = req.body;
 
         // Check for missing fields
@@ -42,14 +42,17 @@ const FactoryController = {
                 return res.status(400).json({ result: false, statusCode: 400, message: 'Email is already in use' });
             }
 
+           
+            
+
             // Create a new dealer instance
             const dealer = new Dealer({
                 shopName,
                 contactPerson,
                 email,
                 gstNumber,
-                password, // Ensure you hash this password before saving
-                FSSAINumber,
+                password,
+                confirmPassword,                FSSAINumber,
                 contactNumber
             });
 
