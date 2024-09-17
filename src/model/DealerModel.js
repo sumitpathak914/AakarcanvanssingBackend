@@ -28,6 +28,7 @@ const dealerSchema = new mongoose.Schema({
     FSSAINumber: { type: String, required: true },
     password: { type: String, required: true },
     confirmPassword: { type: String, required: true },
+    isAllowLogin: { type: Boolean, default: false }
 });
 
 // Pre-save hook to set the unique shopId

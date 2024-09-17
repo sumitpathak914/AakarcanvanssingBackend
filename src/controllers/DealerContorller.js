@@ -68,6 +68,9 @@ const FactoryController = {
                 return res.status(400).json({ result: false, statusCode: 400, message: 'Dealer not found' });
             }
 
+            if (!dealer.isAllowLogin) {
+                return res.status(403).json({ result: false, statusCode: 403, message: 'Login not allowed. Please contact support.' });
+            }
             // Validate password
             if (password !== dealer.password) {
                 return res.status(400).json({ result: false, statusCode: 400, message: 'Invalid password' });
@@ -91,7 +94,58 @@ const FactoryController = {
         }
     },
 
-    // GET all factories
+    GetAllDealers: async (req, res) => {
+        try {
+            // Fetch all dealers from the database
+            const dealers = await Dealer.find({});
+
+            // If no dealers are found
+            if (!dealers || dealers.length === 0) {
+                return res.status(404).json({ result: false, statusCode: 404, message: 'No dealers found' });
+            }
+
+            // Return dealer information, excluding sensitive data like password
+            // const dealerInformation = dealers.map(({ password, confirmPassword, ...dealerData }) => dealerData);
+
+            res.status(200).json({
+                result: true,
+                statusCode: 200,
+                message: 'Dealers retrieved successfully',
+                data: dealers
+            });
+        } catch (error) {
+            console.error('Error retrieving dealers:', error); // Log the error
+            res.status(500).json({ result: false, statusCode: 500, message: 'Internal Server Error' });
+        }
+    },
+    UpdateIsAllowLogin: async (req, res) => {
+        const { shopId, isAllowLogin } = req.body;
+
+        // Validate the shopId input
+        if (!shopId) {
+            return res.status(400).json({ result: false, statusCode: 400, message: 'Shop ID is required' });
+        }
+
+        try {
+            // Find the dealer by shopId
+            const dealer = await Dealer.findOne({ shopId });
+
+            // Check if dealer exists
+            if (!dealer) {
+                return res.status(404).json({ result: false, statusCode: 404, message: 'Dealer not found' });
+            }
+
+            // Update isAllowLogin with the provided value
+            dealer.isAllowLogin = isAllowLogin;
+            await dealer.save();
+
+            res.status(200).json({ result: true, statusCode: 200, message: `Login access ${isAllowLogin ? 'granted' : 'revoked'} successfully`, data: dealer });
+        } catch (error) {
+            console.error('Error updating isAllowLogin:', error); // Log the error
+            res.status(500).json({ result: false, statusCode: 500, message: 'Internal Server Error' });
+        }
+    },
+
 
 
 
