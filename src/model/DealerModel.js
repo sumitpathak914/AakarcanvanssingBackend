@@ -20,15 +20,15 @@ const generateUniqueShopId = async () => {
 };
 
 const dealerSchema = new mongoose.Schema({
-    shopId: { type: String, unique: true },
-    shopName: { type: String, required: true },
-    contactPerson: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    gstNumber: { type: String, required: true },
-    FSSAINumber: { type: String, required: true },
-    password: { type: String, required: true },
-    contactNumber: { type: Number, required: true },
-    confirmPassword: { type: String, required: true }, 
+    shopId: { type: String,  },
+    shopName: { type: String,  },
+    contactPerson: { type: String,  },
+    email: { type: String,  unique: true },
+    gstNumber: { type: String,  },
+    FSSAINumber: { type: String,  },
+    password: { type: String,  },
+    contactNumber: { type: Number },
+    confirmPassword: { type: String,}, 
     isAllowLogin: { type: Boolean, default: false }
 });
 

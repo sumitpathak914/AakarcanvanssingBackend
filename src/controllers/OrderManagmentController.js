@@ -311,7 +311,8 @@ const orderController = {
                         filteredProducts.push({
                             ...product.toObject(),
                             customerInfo: order.customerInfo,
-                            orderId: order.orderId
+                            orderId: order.orderId,
+                            Duepayment: order.Duepayment
                         });
                     }
                 });
