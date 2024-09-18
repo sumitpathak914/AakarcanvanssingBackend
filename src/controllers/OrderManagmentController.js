@@ -79,37 +79,20 @@ const orderController = {
     CreateOrder: async (req, res) => {
         try {
             // Destructure the relevant fields from the request body
-            const { orderId, Total, PaymentDoneAmount, PaymentMethod, Duepayment, ProductDetails, customerInfo, PaymentDetails } = req.body;
+            const { orderId, Total, PaymentDoneAmount, Duepayment, ProductDetails, customerInfo } = req.body;
 
             // Determine which payment details to include based on PaymentMethod
             const transactionData = {
-                PaymentDoneAmount,
-                PaymentMethod,
+                PaymentDoneAmount,  
                 Duepayment,
-                Total,
-                BankDetails: PaymentMethod === 'bank' ? {
-                    BankName: PaymentDetails.BankName,
-                    AccountHolderName: PaymentDetails.AccountHolderName,
-                    AccountNumber: PaymentDetails.AccountNumber,
-                    IFSCCode: PaymentDetails.IFSCCode,
-                    PaymentAmount: PaymentDetails.PaymentAmount
-                } : undefined,
-                ChequeDetails: PaymentMethod === 'cheque' ? {
-                    BankName: PaymentDetails.BankName,
-                    AccountHolderName: PaymentDetails.AccountHolderName,
-                    ChequeNumber: PaymentDetails.ChequeNumber,
-                    PaymentAmount: PaymentDetails.PaymentAmount
-                } : undefined
+                Total,     
             };
 
             // Create a new Order instance with the payment details
-            const order = new Order({
-                ...req.body,
-                PaymentDetails: transactionData // Add the determined payment details
-            });
+            const order = new Order(req.body);
 
-            // Save the order to the database
             await order.save();
+
 
             // Create a new TransactionRecord instance with the extracted data
             const transactionRecord = new TransactionRecord({

@@ -107,9 +107,9 @@ const OrderSchema = new Schema({
     Total: { type: String, },
     ShopId: { type: String, },
     PaymentDoneAmount: { type: String, },
-    PaymentMethod: { type: String, },
+    // PaymentMethod: { type: String, },
     Duepayment: { type: String, },
-    PaymentDetails: { type: PaymentDetailsSchema },
+    // PaymentDetails: { type: PaymentDetailsSchema },
     customerInfo: { type: CustomerInfoSchema, },
     
     ProductDetails: { type: [ProductDetailsSchema], } // Array of products
