@@ -82,9 +82,7 @@ const addTransaction = async (req, res) => {
             }
             newTransactionRecord.ChequeDetails = chequeDetails;
         } else if (PaymentMethod === 'cash') {
-            if (!cashDetails || !cashDetails.PaymentDate || !cashDetails.PaidAmount) {
-                return res.status(400).json({ result: false, statusCode: 400, message: 'Missing cash details.' });
-            }
+           
             newTransactionRecord.CashDetails = cashDetails;
         } else {
             return res.status(400).json({ result: false, statusCode: 400, message: 'Invalid payment method.' });

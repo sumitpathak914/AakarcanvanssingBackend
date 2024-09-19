@@ -79,13 +79,15 @@ const orderController = {
     CreateOrder: async (req, res) => {
         try {
             // Destructure the relevant fields from the request body
-            const { orderId, Total, PaymentDoneAmount, Duepayment, ProductDetails, customerInfo } = req.body;
+            const { orderId, Total, PaymentMethod, PaymentDoneAmount, Duepayment, ProductDetails, customerInfo } = req.body;
 
             // Determine which payment details to include based on PaymentMethod
             const transactionData = {
                 PaymentDoneAmount,  
                 Duepayment,
-                Total,     
+                Total,  
+                PaymentMethod,
+                
             };
 
             // Create a new Order instance with the payment details
@@ -100,7 +102,9 @@ const orderController = {
                 Date: new Date(), // Use the current date or provide a specific date
                 Total,
                 customerInfo,
+                PaymentMethod,
                 ProductDetails,
+                
                 TransactionData: [transactionData] // Add the constructed array here
             });
 
@@ -388,11 +392,14 @@ const orderController = {
             if (!product) {
                 return res.status(404).json({ message: 'Product not found in order' });
             }
-
+            if (order.duePayment === "0") {
+                product.OrderTrackingDetails.payment = true;
+            }
             if (status === 'Out for Delivery') {
                 product.OrderTrackingDetails.Out_for_Delivery = true;
                 product.OrderTrackingDetails.Out_for_Delivery_Note = note || 'Your order is out for delivery';
             } else {
+                
                 product.OrderTrackingDetails.Out_for_Delivery = true;
                 product.OrderTrackingDetails.Out_for_Delivery_Note = note || 'Your order is out for delivery';
                 product.OrderTrackingDetails.Delivered = true;

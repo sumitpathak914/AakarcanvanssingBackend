@@ -60,19 +60,26 @@ const TransactionRecordsData = new Schema({
     PaymentMethod: { type: String },
     Duepayment: { type: String },
     Total: { type: String },
-    TransactionDate: { type: Date, default: getISTDate },
+    TransactionDate: { type: String },
     BankDetails: {
         BankName: { type: String },
         AccountHolderName: { type: String },
         AccountNumber: { type: String },
         IFSCCode: { type: String },
-        PaymentAmount: { type: String }
+        PaymentAmount: { type: String },
+        
     },
     ChequeDetails: {
         BankName: { type: String },
         AccountHolderName: { type: String },
         ChequeNumber: { type: String },
-        PaymentAmount: { type: String }
+        PaymentAmount: { type: String },
+        
+    },
+    cashDetails:{
+        
+        PaymentAmount: { type: String },
+
     }
 });
 

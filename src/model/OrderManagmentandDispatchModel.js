@@ -10,6 +10,7 @@ const OrderTrackingDetailsSchema = new Schema({
     DeliveredNote: { type: String, },
     Out_for_Delivery: { type: Boolean, },
     Out_for_Delivery_Note: { type: String, },
+    payment: { type: Boolean },
 });
 const CommissionSchema = new Schema({
     dealer30Kg: { type: Number, required: true },
