@@ -83,15 +83,15 @@ const FactoryController = {
             if (!dealer) {
                 return res.status(400).json({ result: false, statusCode: 400, message: 'Dealer not found' });
             }
+            if (password !== dealer.password) {
+                return res.status(400).json({ result: false, statusCode: 400, message: 'Invalid password' });
+            }
 
             if (!dealer.isAllowLogin) {
                 return res.status(403).json({ result: false, statusCode: 403, message: 'Login not allowed. Please contact support.' });
             }
             // Validate password
-            if (password !== dealer.password) {
-                return res.status(400).json({ result: false, statusCode: 400, message: 'Invalid password' });
-            }
-
+           
             // Generate JWT token
             const token = jwt.sign({ id: dealer._id, email: dealer.email }, "AakaarCanvansing@#123", { expiresIn: '2 days' });
 

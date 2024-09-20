@@ -19,6 +19,7 @@ const Commissionrouter = require('./src/routes/CommissionSlabRoute');
 const ReviewRouter = require('./src/routes/UserReviewRoute');
 const Dealerrouter = require('./src/routes/DealerRoute');
 const transactionRouter = require('./src/routes/TrasactionRecordsRoute');
+const PaymentRequestrouter = require('./src/routes/PaymentRequestRoute');
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use('/', Commissionrouter);
 app.use('/reviews', ReviewRouter);
 app.use('/Dealer', Dealerrouter);
 app.use('/', transactionRouter);
+app.use('/payments', PaymentRequestrouter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
