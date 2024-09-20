@@ -58,3 +58,31 @@ exports.getPayments = async (req, res) => {
         });
     }
 };
+exports.deletePaymentByOrderId = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+
+        // Find and delete payments associated with the provided orderId
+        const deletedPayment = await Payment.findOneAndDelete({ orderId });
+
+        if (!deletedPayment) {
+            return res.status(404).json({
+                success: false,
+                message: `No payment found for orderId: ${orderId}`
+            });
+        }
+
+        res.status(200).json({
+            statusCode: 200,
+            success: true,
+            message: `Payment record for orderId: ${orderId} has been deleted successfully`,
+            deletedPayment
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while deleting the payment record.',
+            error: error.message
+        });
+    }
+};
