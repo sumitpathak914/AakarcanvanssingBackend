@@ -392,7 +392,7 @@ const orderController = {
             if (!product) {
                 return res.status(404).json({ message: 'Product not found in order' });
             }
-            if (order.duePayment === "0") {
+            if (order.Duepayment === "0") {
                 product.OrderTrackingDetails.payment = true;
             }
             if (status === 'Out for Delivery') {
