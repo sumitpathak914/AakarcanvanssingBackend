@@ -80,6 +80,11 @@ const TransactionRecordsData = new Schema({
         
         PaymentAmount: { type: String },
 
+    },
+     DiscountDetails: {
+
+        PaymentAmount: { type: String },
+
     }
 });
 

@@ -8,4 +8,5 @@ Dealerrouter.post('/AddDealer', DealerContoller.SaveDealer);
 Dealerrouter.post('/dealerlogin', DealerContoller.LoginDealer);
 Dealerrouter.get('/Getdealers', DealerContoller.GetAllDealers);
 Dealerrouter.post('/LoginAccess', DealerContoller.UpdateIsAllowLogin);
+Dealerrouter.get('/DealerCommission', DealerContoller.calculateDealerCommission);
 module.exports = Dealerrouter;

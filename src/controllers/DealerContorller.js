@@ -1,5 +1,5 @@
 const Dealer = require('../model/DealerModel');
-
+const Order = require('../model/OrderManagmentandDispatchModel');
 const jwt = require('jsonwebtoken');
 
 const FactoryController = {
@@ -162,7 +162,59 @@ const FactoryController = {
         }
     },
 
+    calculateDealerCommission: async (req, res) => {
+        try {
+            const orders = await Order.find(); // Fetch all orders
+            const commissions = {};
 
+            // Loop through orders to calculate commissions
+            for (const order of orders) {
+                const shopId = order.ShopId; // Get ShopId from the order
+
+                // Loop through the ProductDetails array
+                for (const product of order.ProductDetails) {
+                    // Check if the product's dispatch status is completed
+                    if (product.dispatchShippingDetails.DispatchStatus === 'Completed') {
+                        const factoryId = product.SupplierInfo.FactoryId; // Get the factory ID from SupplierInfo
+                        const commissionRates = product.commission; // Get commission rates for different sizes
+
+                        // Calculate commission based on the size and quantity
+                        for (const selection of product.selection) {
+                            const size = selection.size; // Get the size of the product
+                            const quantity = selection.quantity; // Get the quantity of the product
+
+                            let commissionRate;
+                            if (size === '30kg') {
+                                commissionRate = commissionRates.dealer30Kg; // Get the dealer commission for 30kg
+                            } else if (size === '50kg') {
+                                commissionRate = commissionRates.dealer50Kg; // Get the dealer commission for 50kg
+                            } else if (size === '70kg') {
+                                commissionRate = commissionRates.dealer70Kg; // Get the dealer commission for 70kg
+                            }
+
+                            if (commissionRate) {
+                                // Calculate total commission for this product
+                                const totalCommission = commissionRate * quantity;
+
+                                // Initialize the commission for this shop or factory if it doesn't exist
+                                if (!commissions[shopId]) {
+                                    commissions[shopId] = 0;
+                                }
+
+                                // Add the total commission to the shop's or factory's total
+                                commissions[shopId] += totalCommission;
+                            }
+                        }
+                    }
+                }
+            }
+
+            res.status(200).json({ result: true, statusCode: 200, commissions });
+        } catch (error) {
+            console.error('Error calculating commissions:', error);
+            res.status(500).json({ result: false, statusCode: 500, error: 'Failed to calculate commissions.' });
+        }
+    }
 
 
 

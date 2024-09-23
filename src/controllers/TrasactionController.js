@@ -39,10 +39,10 @@ const getTransactionByOrderId = async (req, res) => {
 };
 const addTransaction = async (req, res) => {
     try {
-        const { orderId, PaymentDoneAmount, PaymentMethod, Duepayment, Total, transactionDate, BankDetails, chequeDetails, cashDetails } = req.body;
+        const { orderId, PaymentDoneAmount, PaymentMethod, Duepayment, Total, transactionDate, BankDetails, chequeDetails, cashDetails, DiscountDetails } = req.body;
 
         // Validate required fields based on payment method
-        if (!orderId || !PaymentDoneAmount || !PaymentMethod || !Duepayment || !Total || !transactionDate) {
+        if (!orderId || !PaymentDoneAmount || !PaymentMethod || !Duepayment || !Total || !transactionDate ) {
             return res.status(400).json({ result: false, statusCode: 400, message: 'Missing required fields.' });
         }
 
@@ -84,6 +84,9 @@ const addTransaction = async (req, res) => {
         } else if (PaymentMethod === 'cash') {
            
             newTransactionRecord.CashDetails = cashDetails;
+        } else if (PaymentMethod ==='Discount') {
+
+            newTransactionRecord.DiscountDetails = DiscountDetails;
         } else {
             return res.status(400).json({ result: false, statusCode: 400, message: 'Invalid payment method.' });
         }
