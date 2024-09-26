@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const FactoryController = {
 
-     SaveDealer : async (req, res) => {
+    SaveDealer: async (req, res) => {
         const { shopName, contactPerson, email, gstNumber, password, confirmPassword, FSSAINumber, contactNumber } = req.body;
 
         // Check for missing fields
@@ -42,8 +42,8 @@ const FactoryController = {
                 return res.status(400).json({ result: false, statusCode: 400, message: 'Email is already in use' });
             }
 
-           
-            
+
+
 
             // Create a new dealer instance
             const dealer = new Dealer({
@@ -52,7 +52,7 @@ const FactoryController = {
                 email,
                 gstNumber,
                 password,
-                confirmPassword,                FSSAINumber,
+                confirmPassword, FSSAINumber,
                 contactNumber
             });
 
@@ -91,7 +91,7 @@ const FactoryController = {
                 return res.status(403).json({ result: false, statusCode: 403, message: 'Login not allowed. Please contact support.' });
             }
             // Validate password
-           
+
             // Generate JWT token
             const token = jwt.sign({ id: dealer._id, email: dealer.email }, "AakaarCanvansing@#123", { expiresIn: '2 days' });
 
@@ -214,8 +214,38 @@ const FactoryController = {
             console.error('Error calculating commissions:', error);
             res.status(500).json({ result: false, statusCode: 500, error: 'Failed to calculate commissions.' });
         }
-    }
+    },
 
+    GetDealerByShopId: async (req, res) => {
+        try {
+            const { shopId } = req.params; // Extract shopId from the request parameters
+
+            // Fetch the dealer from the database using shopId
+            const dealer = await Dealer.findOne({ shopId });
+
+            // If no dealer is found with the provided shopId
+            if (!dealer) {
+                return res.status(404).json({
+                    result: false,
+                    statusCode: 404,
+                    message: `Dealer with shopId ${shopId} not found`
+                });
+            }
+
+            // Return dealer information, excluding sensitive data like password
+            const { password, confirmPassword, ...dealerData } = dealer._doc;
+
+            res.status(200).json({
+                result: true,
+                statusCode: 200,
+                message: 'Dealer retrieved successfully',
+                data: dealerData
+            });
+        } catch (error) {
+            console.error('Error retrieving dealer:', error); // Log the error
+            res.status(500).json({ result: false, statusCode: 500, message: 'Internal Server Error' });
+        }
+    }
 
 
 
