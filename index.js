@@ -20,7 +20,7 @@ const ReviewRouter = require('./src/routes/UserReviewRoute');
 const Dealerrouter = require('./src/routes/DealerRoute');
 const transactionRouter = require('./src/routes/TrasactionRecordsRoute');
 const PaymentRequestrouter = require('./src/routes/PaymentRequestRoute');
-const PurchaseReturn = require('./src/model/PurchaseReturnModel');
+
 const PurchaseReturnrouter = require('./src/routes/PurchaseReturnRoute');
 
 const app = express();
