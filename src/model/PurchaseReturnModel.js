@@ -23,7 +23,16 @@ const productDetailsSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-   
+    returnStatus: {
+        type: String,
+
+        default: "Pending"
+    },
+    RejectedMessage: {
+        type: String,
+
+    },
+
     selectedImages: {
         type: [String], // Array of strings (image paths)
         default: []
@@ -82,14 +91,26 @@ const purchaseReturnSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    productDetails: productDetailsSchema,
+    OrderDate: {
+        type: String,
+        required: true
+    },
+    totalAmount: {
+        type: String,
+        required: true
+    },
+    DuePayment: {
+        type: String,
+        required: true
+    },
+    returnMessage: {
+        type: String,
+        required: true
+    },
+    productDetails:[productDetailsSchema],
     SupplierInfo: supplierInfoSchema,
     customerInfo: customerInfoSchema,
-    returnStatus: {
-        type: String,
-       
-        default: "Pending"
-    }
+
 }, { timestamps: true });
 
 const PurchaseReturn = mongoose.model('PurchaseReturn', purchaseReturnSchema);

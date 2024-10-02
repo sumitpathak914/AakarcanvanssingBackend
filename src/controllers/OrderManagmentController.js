@@ -192,8 +192,78 @@ const orderController = {
             res.status(500).json({ error: err.message });
         }
     },
+    // GetOrderDetailsForReturn: async (req, res) => {
+    //     try {
+    //         const { orderId} = req.body;
 
 
+    //         // Find the order based on orderId
+    //         const order = await Order.findOne({ orderId });
+    //         if (!order) {
+    //             return res.status(404).json({ result: false, statusCode: 404, message: 'Order not found.' });
+    //         }
+
+            
+
+    //         // Extract customerInfo
+    //         const customerInfo = order.customerInfo;
+
+    //         res.status(200).json({
+    //             result: true,
+    //             statusCode: 200,
+    //             message: 'Order details fetched successfully.',
+    //             orderId: order.orderId,
+    //             Total: order.Total,
+    //             PaymentDoneAmount: order.PaymentDoneAmount,
+    //             PaymentMethod: order.PaymentMethod,
+    //             Duepayment: order.Duepayment,
+    //             ProductDetails: order.ProductDetails,
+    //             customerInfo: customerInfo,
+    //         });
+    //     } catch (err) {
+    //         console.error('Error in GetOrderDetails:', err);
+    //         res.status(500).json({ error: err.message });
+    //     }
+    // },
+
+
+    GetOrderDetailsForReturn: async (req, res) => {
+        try {
+            const { orderId, productId } = req.body;
+
+
+            // Find the order based on orderId
+            const order = await Order.findOne({ orderId });
+            if (!order) {
+                return res.status(404).json({ result: false, statusCode: 404, message: 'Order not found.' });
+            }
+
+            // Find the product details within the order based on productId
+            const product = order.ProductDetails.find(p => p.ProductID === productId);
+            if (!product) {
+                return res.status(404).json({ result: false, statusCode: 404, message: 'Product not found in the order.' });
+            }
+
+            // Extract customerInfo
+            const customerInfo = order.customerInfo;
+
+            res.status(200).json({
+                result: true,
+                statusCode: 200,
+                message: 'Order details fetched successfully.',
+                orderId: order.orderId,
+                Total: order.Total,
+                PaymentDoneAmount: order.PaymentDoneAmount,
+                PaymentMethod: order.PaymentMethod,
+                Duepayment: order.Duepayment,
+                ProductDetails: product,
+                customerInfo: customerInfo,
+            });
+        } catch (err) {
+            console.error('Error in GetOrderDetails:', err);
+            res.status(500).json({ error: err.message });
+        }
+    },
     UpdateTheOrderStatus: async (req, res) => {
         const { orderId, productId, uniqueCode } = req.body;
 

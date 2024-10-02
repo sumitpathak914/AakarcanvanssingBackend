@@ -18,4 +18,5 @@ OrderRouter.post('/AddDetailsDispatch', authenticateToken, OrderManagmentControl
 OrderRouter.post('/ChangeTheOrderStatus', authenticateToken, OrderManagmentController.ChangeTheStatusOfTracking);
 OrderRouter.post('/ChangeRefundOrderStatus', authenticateToken, OrderManagmentController.ChangeReturnOrderStatus);
 OrderRouter.get('/getOrdersByShopId/:ShopId', OrderManagmentController.getOrdersByShopId);
+OrderRouter.post('/GetOrderDetails_ForPurchase', authenticateToken, OrderManagmentController.GetOrderDetailsForReturn);
 module.exports = OrderRouter;

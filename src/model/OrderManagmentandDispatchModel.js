@@ -57,6 +57,7 @@ const ProductDetailsSchema = new Schema({
     ProductID: { type: String, },
     OrderDate: { type: String, },
     ProductName: { type: String, },
+    productTotalAmount: { type: String, },
     MRP: { type: String, },
     QTY: { type: String, },
     discount: { type: String, },
