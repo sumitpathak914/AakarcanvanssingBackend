@@ -151,7 +151,7 @@ const UpdateStatusofReturnProduct = async (req, res) => {
                         // Deduct the product total amount from Total and DuePayment
                         orderDetail.Total = (parseFloat(orderDetail.Total) - parseFloat(productTotalAmount)).toFixed(2);
                         orderDetail.Duepayment = (parseFloat(orderDetail.Duepayment) - parseFloat(productTotalAmount)).toFixed(2);
-                        orderDetail.ReturnApply = true
+                        ordersDetail[0].ReturnApply = false;
                         // Update DispatchStatus to 'Return'
                         if (matchingProduct.dispatchShippingDetails) {
                             matchingProduct.dispatchShippingDetails.DispatchStatus = 'Return';
