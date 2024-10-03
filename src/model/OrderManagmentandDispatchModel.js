@@ -113,8 +113,9 @@ const OrderSchema = new Schema({
     Duepayment: { type: String, },
     // PaymentDetails: { type: PaymentDetailsSchema },
     customerInfo: { type: CustomerInfoSchema, },
-    
-    ProductDetails: { type: [ProductDetailsSchema], } // Array of products
+
+    ProductDetails: { type: [ProductDetailsSchema], },// Array of products
+    ReturnApply: { type: Boolean, default: false } // Default is false
 });
 
 const Order = mongoose.model('Order', OrderSchema);

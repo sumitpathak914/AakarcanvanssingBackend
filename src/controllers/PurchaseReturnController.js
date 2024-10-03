@@ -9,28 +9,53 @@ const addReturnOrder = async (req, res) => {
             OrderDate,
             productDetails,
             SupplierInfo,
-            customerInfo,          
+            customerInfo,
             DuePayment,
             returnMessage,
             totalAmount,
+            ShopId
         } = req.body;
 
+        // Find the corresponding order by OrderId
+        const existingOrder = await Order.findOne({ orderId: OrderId });
+
+        if (!existingOrder) {
+            return res.status(404).json({
+                success: false,
+                message: 'Order not found with the given OrderId'
+            });
+        }
+
+        
+       
+
+        existingOrder.ReturnApply= true ;
+ 
+
+        // Save the updated order
+        await existingOrder.save();
+
+        // Create a new return order
         const newPurchaseReturn = new PurchaseReturn({
             OrderId,
             OrderDate,
             productDetails,
             SupplierInfo,
-            customerInfo,   
+            customerInfo,
             DuePayment,
             returnMessage,
             totalAmount,
+            ShopId
         });
 
+        // Save the return order
         await newPurchaseReturn.save();
+
         return res.status(201).json({
             success: true,
             message: 'Return order added successfully!',
-            data: newPurchaseReturn
+            data: newPurchaseReturn,
+            updatedOrder: existingOrder
         });
     } catch (error) {
         console.error('Error adding return order:', error);
@@ -126,7 +151,7 @@ const UpdateStatusofReturnProduct = async (req, res) => {
                         // Deduct the product total amount from Total and DuePayment
                         orderDetail.Total = (parseFloat(orderDetail.Total) - parseFloat(productTotalAmount)).toFixed(2);
                         orderDetail.Duepayment = (parseFloat(orderDetail.Duepayment) - parseFloat(productTotalAmount)).toFixed(2);
-
+                        orderDetail.ReturnApply = true
                         // Update DispatchStatus to 'Return'
                         if (matchingProduct.dispatchShippingDetails) {
                             matchingProduct.dispatchShippingDetails.DispatchStatus = 'Return';
@@ -142,9 +167,11 @@ const UpdateStatusofReturnProduct = async (req, res) => {
                     }
                 } else if (selectedActions === 'RejectRefund') {
                     product.returnStatus = 'Rejected';
-                    product.RejectedMessage = rejectedReason; // Add rejected reason to the specific product
+                    product.RejectedMessage = rejectedReason; 
+                    ordersDetail[0].ReturnApply = false;
                 } else {
                     product.returnStatus = 'Pending'; // Set to "Pending" if neither action is taken
+                    ordersDetail[0].ReturnApply = true;
                 }
 
                 // Save the updated order and ordersDetail to the database

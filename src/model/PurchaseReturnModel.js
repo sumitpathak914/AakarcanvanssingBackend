@@ -68,6 +68,7 @@ const customerInfoSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    
     ContactNo: {
         type: String,
         required: true
@@ -88,6 +89,10 @@ const customerInfoSchema = new mongoose.Schema({
 
 const purchaseReturnSchema = new mongoose.Schema({
     OrderId: {
+        type: String,
+        required: true
+    },
+    ShopId: {
         type: String,
         required: true
     },
