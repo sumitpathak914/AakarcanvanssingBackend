@@ -1,6 +1,6 @@
 const PurchaseReturn = require('../model/PurchaseReturnModel');
 const Order = require('../model/OrderManagmentandDispatchModel');
-const TransactionRecord = require('../model/TrasactionsRecords'); 
+const TransactionRecord = require('../model/TrasactionsRecords');
 // Add a new return order
 const addReturnOrder = async (req, res) => {
     try {
@@ -26,11 +26,11 @@ const addReturnOrder = async (req, res) => {
             });
         }
 
-        
-       
 
-        existingOrder.ReturnApply= true ;
- 
+
+
+        existingOrder.ReturnApply = true;
+
 
         // Save the updated order
         await existingOrder.save();
@@ -79,7 +79,7 @@ const getAllReturnOrders = async (req, res) => {
         console.error('Error fetching return orders:', error);
         return res.status(500).json({
             result: false,
-            statusCode:500,
+            statusCode: 500,
             message: 'Failed to fetch return orders',
             error: error.message
         });
@@ -167,7 +167,7 @@ const UpdateStatusofReturnProduct = async (req, res) => {
                     }
                 } else if (selectedActions === 'RejectRefund') {
                     product.returnStatus = 'Rejected';
-                    product.RejectedMessage = rejectedReason; 
+                    product.RejectedMessage = rejectedReason;
                     ordersDetail[0].ReturnApply = false;
                 } else {
                     product.returnStatus = 'Pending'; // Set to "Pending" if neither action is taken
@@ -209,7 +209,7 @@ const UpdateStatusofReturnProduct = async (req, res) => {
 const GetTheStatusOfReturnProduct = async (req, res) => {
     try {
         const { OrderId, ProductId } = req.body;
-console.log(req.body)
+        console.log(req.body)
         // Log the received parameters for debugging
         console.log(`Received OrderId: '${OrderId}'`);
         console.log(`Received ProductId: '${ProductId}'`);

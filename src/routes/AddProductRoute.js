@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const app = express();
 const productController = require('../controllers/AddProductController'); // Adjust the path as per your project structure
 const authenticateToken = require('../middleware/auth');
 
@@ -16,7 +17,8 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
+app.use(express.json({ limit: '100mb' })); // Increase the limit as needed
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 // Define routes with multer middleware
 router.post('/addProducts', upload.array('selectedImages', 3), productController.createProduct); // Assuming 'selectedImages' is the field name for file upload
 
