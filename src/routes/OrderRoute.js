@@ -3,8 +3,8 @@ const OrderRouter = express.Router();
 const app = express();
 const OrderManagmentController = require('../controllers/OrderManagmentController'); // Adjust the path as per your project structure
 const authenticateToken = require('../middleware/auth');
-app.use(express.json({ limit: '100mb' })); // Increase the limit as needed
-app.use(express.urlencoded({ limit: '100mb', extended: true }));
+app.use(express.json({ limit: '200mb' })); // Adjust limit as necessary
+app.use(express.urlencoded({ limit: '200mb', extended: true }));
 
 // Define routes with multer middleware
 
