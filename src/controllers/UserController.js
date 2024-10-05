@@ -53,7 +53,26 @@ const userController = {
             console.error(err.message);
             res.status(500).send("Server Error");
         }
-    }
+    },
+    deleteFactory: async (req, res) => {
+        const { id } = req.params;
+
+        console.log(id)
+
+        try {
+            const deletedFactory = await User.findByIdAndDelete(id);
+
+            if (!deletedFactory) {
+                console.log(`Factory not found for ID: ${id}`);
+                return res.status(404).json({ result: false, statusCode: 404, message: 'Factory not found.' });
+            }
+
+            res.status(200).json({ result: true, statusCode: 200, message: 'Factory deleted successfully.' });
+        } catch (error) {
+            console.error('Error deleting factory:', error);
+            res.status(500).json({ result: false, statusCode: 500, error: 'Failed to delete factory.' });
+        }
+    },
 };
 
 module.exports = userController;

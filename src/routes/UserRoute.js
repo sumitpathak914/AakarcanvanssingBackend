@@ -7,6 +7,6 @@ const userController = require('../controllers/UserController');
 UserRouter.post('/GetFactories', authenticateToken, userController.getFactoriesByCategory);
 UserRouter.get('/GetAllFActories', authenticateToken, userController.getAllUsers);
 UserRouter.get('/factory/:id', userController.getFactoryById);
-
+UserRouter.delete('/DeleteFactory/:id', userController.deleteFactory);
 
 module.exports = UserRouter;
