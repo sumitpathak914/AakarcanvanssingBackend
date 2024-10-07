@@ -42,7 +42,7 @@ const QuotationController = {
             </td>
             <td>
                 ${product.discount ?
-                        `<del>${product.price}/kg</del><br /> ₹ ${discountedPrice}/kg` :
+                            `<del>${product.price}/kg</del><br /> ₹ ${discountedPrice}/kg` :
                             `₹ ${product.price}/kg`
                         }
             </td>
@@ -52,7 +52,7 @@ const QuotationController = {
         </tr>
     `;
                 }).join('');
-// Join all product rows into a single string
+                // Join all product rows into a single string
 
 
                 // Calculate total amounts
@@ -65,7 +65,7 @@ const QuotationController = {
                 const totalDiscount = ProductDetails.TotalDiscount
 
 
-            
+
                 const grandTotal = subtotal - totalDiscount;
 
 
@@ -176,7 +176,7 @@ const QuotationController = {
                     <body>
                         <div class="container">
                             <div class="header">
-                              
+                              <img src="https://aakarcanvanssing-backend.vercel.app/asset/AdminLogo.png" alt="Company Logo">
 
                                 <div class="details">
                                     <p><strong>Quotation ID:</strong> ${AddDetails.QuotationID}</p>
