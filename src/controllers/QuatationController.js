@@ -6,11 +6,11 @@ const nodemailer = require('nodemailer');
 
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
+    service: 'gmail',
+    port: 456,
     auth: {
-        user: 'viviane88@ethereal.email',
-        pass: 'MmGV3Y8jZYqthAs7NB'
+        user: 'sumitpathakofficial914@gmail.com',
+        pass: 'awtiquudehddpias'
     }
 });
 
@@ -23,25 +23,51 @@ const QuotationController = {
             if (Action === 1) {
                 // Generate PDF
                 const productRows = ProductDetails.selectedProducts.map(product => {
-                    const discountAmt = product.discount ? (product.price * product.Qty * product.discount / 100).toFixed(2) : '0';
-                    const subTotal = ((product.price * product.Qty) - discountAmt).toFixed(2);
+                    const selectionItems = product.selection.map((item, index) => {
+                        return `<li key="${index}">Bag size ${item.size} with quantity ${item.quantity}</li>`;
+                    }).join(''); // Join the items into a single string
+
+                    // Calculate the discounted price if a discount is available
+                    const discountedPrice = product.discount
+                        ? (product.price - (product.price * (product.discount / 100))).toFixed(2)
+                        : '';
+
                     return `
-                        <tr>
-                            <td>${product.productCode} ${product.productName}</td>
-                            <td>${product.Qty}</td>
-                            <td>${product.price}/ Bag</td>
-                            <td>${product.discount || '0'}%</td>
-                            <td>₹ ${discountAmt}</td>
-                            <td>12%</td>
-                            <td>₹ ${subTotal}</td>
-                        </tr>
-                    `;
+        <tr>
+            <td>${product.productCode} ${product.productName}</td>
+            <td>
+                <ul>
+                    ${selectionItems} <!-- Insert the selection items here -->
+                </ul>
+            </td>
+            <td>
+                ${product.discount ?
+                        `<del>${product.price}/kg</del><br /> ₹ ${discountedPrice}/kg` :
+                            `₹ ${product.price}/kg`
+                        }
+            </td>
+            <td>${product.discount || '0'}%</td>
+            <td>₹ ${product.Dis_Amt}</td>
+            <td>₹ ${product.Total.toFixed(2)}</td>
+        </tr>
+    `;
                 }).join('');
+// Join all product rows into a single string
+
 
                 // Calculate total amounts
-                const subtotal = ProductDetails.selectedProducts.reduce((acc, product) => acc + (product.price * product.Qty), 0);
-                const totalDiscount = ProductDetails.selectedProducts.reduce((acc, product) => acc + (product.price * product.Qty * (product.discount || 0) / 100), 0);
+                // const subtotal = ProductDetails.selectedProducts.reduce((acc, product) => {
+                //     const discountAmt = product.discount ? (product.price * product.selection[0].quantity * product.discount / 100) : 0;
+                //     return acc + ((product.price * product.selection[0].quantity) - discountAmt);
+                // }, 0);
+
+                const subtotal = ProductDetails.Subtotal + ProductDetails.TotalDiscount
+                const totalDiscount = ProductDetails.TotalDiscount
+
+
+            
                 const grandTotal = subtotal - totalDiscount;
+
 
                 const htmlContent = `
                     <!DOCTYPE html>
@@ -77,6 +103,7 @@ const QuotationController = {
                             }
                             .header .details {
                                 text-align: right;
+                                 margin-top: -110px;
                             }
                             .header .details p {
                                 margin: 0;
@@ -149,7 +176,8 @@ const QuotationController = {
                     <body>
                         <div class="container">
                             <div class="header">
-                                <img src="logo.png" alt="Company Logo">
+                              <img src="https://aakarcanvanssing-backend.vercel.app/asset/AdminLogo.png" alt="Company Logo">
+
                                 <div class="details">
                                     <p><strong>Quotation ID:</strong> ${AddDetails.QuotationID}</p>
                                     <p><strong>Generated on:</strong> ${AddDetails.QuotationDate}</p>
@@ -187,7 +215,7 @@ const QuotationController = {
                                             <th>Base Price</th>
                                             <th>Discount</th>
                                             <th>Discount Amt</th>
-                                            <th>Tax</th>
+                                          
                                             <th>Sub Total</th>
                                         </tr>
                                     </thead>
@@ -243,11 +271,7 @@ const QuotationController = {
                         text: `Dear ${customerName},
     
     We hope this email finds you well.
-    Thank you for considering Aakar Canvassing for your agro product needs. We are pleased to 
-    provide you with a quotation for the products you have requested.
-    
-    Please find the details of your quotation attached in PDF format.
-    
+
     Quotation Details:
     Quotation ID: ${AddDetails.QuotationID}
     Date: ${new Date().toLocaleDateString()}
@@ -261,8 +285,14 @@ const QuotationController = {
     To confirm this quotation and proceed with your order, please reply to this email or contact us 
     directly at +91 7896959655.
     We look forward to serving you and providing you with high-quality agro products.
-    Thank you for choosing Aakar Canvassing.
+
+    Thank you for considering Aakar Canvassing for your agro product needs. We are pleased to 
+    provide you with a quotation for the products you have requested.
     
+    Please find the details of your quotation attached in PDF format.
+    
+    
+   
     Best regards,
     Aakar Canvassing`,
                         attachments: [

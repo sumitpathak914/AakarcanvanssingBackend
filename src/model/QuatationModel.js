@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
+const SelectionSchema = new mongoose.Schema({
+    size: { type: String, required: true },
+    quantity: { type: Number, required: true }
+});
 
-// Define product schema
 const productSchema = new mongoose.Schema({
     id: {
         type: String,
@@ -14,10 +17,7 @@ const productSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
-    selectedImages: {
-        type: [String], // Array of strings (image paths)
-        default: []
-    },
+   
     productName: {
         type: String,
         required: true
@@ -34,17 +34,20 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    Qty: {
-        type: String,
+    Total: {
+        type: Number,
         default: ""
     },
+
     Dis_Amt: {
-        type: String,
+        type: Number,
         default: ""
-    }
+    },
+    selection: [SelectionSchema],
 });
 
-// Define schema
+
+
 const quotationSchema = new mongoose.Schema({
     Action: Number,
     ShopInformation: {
@@ -63,10 +66,10 @@ const quotationSchema = new mongoose.Schema({
     ProductDetails: {
         selectedProducts: [productSchema], // Array of products based on productSchema
         Subtotal: Number,
-        Total: Number,
-        Commission: Number,
-        Tax: Number,
+        TotalDiscount: Number,
+
     },
+   
 });
 
 // Create model

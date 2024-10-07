@@ -50,7 +50,7 @@ app.use('/', transactionRouter);
 app.use('/payments', PaymentRequestrouter);
 app.use('/purchase-return', PurchaseReturnrouter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
+app.use('/asset', express.static(path.join(__dirname, 'src', 'asset')));
 
 
 
