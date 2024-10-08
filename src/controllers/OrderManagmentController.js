@@ -1,6 +1,20 @@
 const Order = require('../model/OrderManagmentandDispatchModel');
 const TransactionRecord = require('../model/TrasactionsRecords');
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    port: 587,
+    secure: false,
+    auth: {
+        user: 'sumitpathakofficial914@gmail.com',
+        pass: 'awtiquudehddpias' // Make sure to secure this using environment variables
+    }
+});
 const orderController = {
+
+    
+
+   
     //  CreateOrder : async (req, res) => {
     //     try {
     //         // Destructure the relevant fields from the request body
@@ -265,12 +279,9 @@ const orderController = {
         }
     },
     UpdateTheOrderStatus: async (req, res) => {
-        const { orderId, productId, uniqueCode } = req.body;
+        const { orderId, productId, uniqueCode, shopEmail, emailToggle } = req.body;
 
         try {
-            // Log the incoming request data
-
-
             // Fetch the order from the database
             const order = await Order.findOne({ orderId });
 
@@ -285,61 +296,115 @@ const orderController = {
                 return res.status(404).json({ message: 'Product not found in order' });
             }
 
-            // Log the current state of the product for debugging
-            console.log('Current Product Details:', product);
-
             // Update product details
             product.dispatchShippingDetails.OrderStatus = 'Shipped';
-            // product.OrderTrackingDetails.Shipped = true;
             product.OrderTrackingDetails.Place = true;
             product.dispatchShippingDetails.DispatchStatus = 'pending';
-            product.dispatchShippingDetails.DispatchID = uniqueCode; // Ensure DispatchId is correctly assigned
-
-            // Log the updated state of the product for debugging
-
+            product.dispatchShippingDetails.DispatchID = uniqueCode;
 
             // Save the updated order
             const updatedOrder = await order.save();
 
-            // Log the result of the save operation
-            console.log('Order After Save:', updatedOrder);
+            // Send email if emailToggle is true
+            if (emailToggle) {
+                const mailOptions = {
+                    from: 'sumitpathakofficial914@gmail.com',
+                    to: shopEmail, // Send to the shop email
+                    subject: 'Order Confirmation',
+                    text: `Your order with Order ID: ${orderId} and Product ID: ${productId} has been successfully shipped. Dispatch ID: ${uniqueCode}. Thank you for shopping with us!`
+                };
+
+                // Send the email using Nodemailer
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.error('Error sending email:', error);
+                        return res.status(500).json({ message: 'Failed to send email', error });
+                    } else {
+                        console.log('Email sent: ' + info.response);
+                    }
+                });
+            }
 
             // Send response
             res.json({ message: 'Order status updated successfully' });
         } catch (error) {
-            // Handle errors
             console.error('Error updating order status:', error);
             res.status(500).json({ message: 'Server error', error });
         }
     },
     handleOrderActionUpdateAndCancel: async (req, res) => {
-        const { modelAction, orderId, productId, reason, sendEmail } = req.body;
+        const { modelAction, orderId, productId, reason, shopEmail, sendEmail } = req.body;
 
+        // Validate the required fields
         if (!modelAction || !orderId || !productId || !reason) {
             return res.status(400).json({ error: 'All fields are required' });
         }
 
         try {
+            // Find the order by orderId
             const order = await Order.findOne({ orderId });
 
             if (!order) {
                 return res.status(404).json({ message: 'Order not found' });
             }
 
+            // Find the product within the order by productId
             const product = order.ProductDetails.find(p => p.ProductID === productId);
 
             if (!product) {
                 return res.status(404).json({ message: 'Product not found in order' });
             }
 
+            // Handle "Pending" action
             if (modelAction === 'Pending') {
                 product.dispatchShippingDetails.OrderPendingReason = reason;
                 product.dispatchShippingDetails.OrderStatus = modelAction;
                 product.dispatchShippingDetails.OrderCancelReason = "";
+
+                // Check if sendEmail is true, and send a "Pending" status email
+                if (sendEmail) {
+                    const mailOptions = {
+                        from: 'sumitpathakofficial914@gmail.com',
+                        to: shopEmail,
+                        subject: 'Order Pending Notification',
+                        text: `Dear Customer, your order with Order ID: ${orderId} and Product ID: ${productId} is currently pending. Reason: ${reason}.`
+                    };
+
+                    // Send the email
+                    transporter.sendMail(mailOptions, (error, info) => {
+                        if (error) {
+                            console.error('Error sending pending email:', error);
+                        } else {
+                            console.log('Pending email sent: ' + info.response);
+                        }
+                    });
+                }
+
+                // Handle "Cancel" action
             } else if (modelAction === 'Cancel') {
                 product.dispatchShippingDetails.OrderPendingReason = "";
                 product.dispatchShippingDetails.OrderCancelReason = reason;
                 product.dispatchShippingDetails.OrderStatus = "Canceled";
+
+                // Check if sendEmail is true, and send a "Cancellation" status email
+                if (sendEmail) {
+                    const mailOptions = {
+                        from: 'sumitpathakofficial914@gmail.com',
+                        to: shopEmail,
+                        subject: 'Order Cancellation Notification',
+                        text: `Dear Customer, your order with Order ID: ${orderId} and Product ID: ${productId} has been canceled. Reason: ${reason}. We apologize for the inconvenience.`
+                    };
+
+                    // Send the email
+                    transporter.sendMail(mailOptions, (error, info) => {
+                        if (error) {
+                            console.error('Error sending cancellation email:', error);
+                        } else {
+                            console.log('Cancellation email sent: ' + info.response);
+                        }
+                    });
+                }
+
             } else {
                 return res.status(400).json({ error: 'Invalid model action' });
             }
@@ -347,6 +412,7 @@ const orderController = {
             // Save the updated order
             await order.save();
 
+            // Send success response
             res.status(201).json({ message: 'Order action recorded successfully' });
         } catch (error) {
             console.error('Error recording order action:', error);
@@ -379,6 +445,39 @@ const orderController = {
                 result: true,
                 statusCode: 200,
                 message: 'Dispatch Product List retrieved successfully',
+                DispatchOrderList: filteredProducts
+            });
+        } catch (error) {
+            res.status(500).json({ message: 'Server error', error });
+        }
+    },
+    getDispatchingOrdersByFactory: async (req, res) => {
+        try {
+            const { factoryId } = req.params; // Assuming factoryId is passed as a URL parameter
+
+            // Fetch orders for the specific factory using the factoryId in SupplierInfo
+            const orders = await Order.find({ 'ProductDetails.SupplierInfo.FactoryId': factoryId });
+
+            // Collect all products that match the criteria into a single array
+            const filteredProducts = [];
+
+            orders.forEach(order => {
+                order.ProductDetails.forEach(product => {
+                    if (product.dispatchShippingDetails?.OrderStatus === 'Shipped') {
+                        filteredProducts.push({
+                            ...product.toObject(),
+                            customerInfo: order.customerInfo,
+                            orderId: order.orderId,
+                            Duepayment: order.Duepayment
+                        });
+                    }
+                });
+            });
+
+            res.json({
+                result: true,
+                statusCode: 200,
+                message: 'Dispatch Product List retrieved successfully for factory ' + factoryId,
                 DispatchOrderList: filteredProducts
             });
         } catch (error) {

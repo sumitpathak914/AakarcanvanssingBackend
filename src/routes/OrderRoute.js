@@ -13,6 +13,7 @@ OrderRouter.get('/GetAllOrderDetails', authenticateToken, OrderManagmentControll
 OrderRouter.post('/GetOrderDetails', authenticateToken, OrderManagmentController.GetOrderDetails);
 OrderRouter.post('/UpdateStatus', authenticateToken, OrderManagmentController.UpdateTheOrderStatus);
 OrderRouter.get('/GetDispatchList', authenticateToken, OrderManagmentController.getDispatchingOrders);
+OrderRouter.get('/dispatch-orders/:factoryId', OrderManagmentController.getDispatchingOrdersByFactory);
 OrderRouter.post('/UpdateStatusPendingAndCancel', authenticateToken, OrderManagmentController.handleOrderActionUpdateAndCancel);
 OrderRouter.post('/AddDetailsDispatch', authenticateToken, OrderManagmentController.AddDetailsOfDispatch);
 OrderRouter.post('/ChangeTheOrderStatus', authenticateToken, OrderManagmentController.ChangeTheStatusOfTracking);
