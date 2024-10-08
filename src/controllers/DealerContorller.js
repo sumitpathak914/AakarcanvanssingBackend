@@ -245,7 +245,74 @@ const FactoryController = {
             console.error('Error retrieving dealer:', error); // Log the error
             res.status(500).json({ result: false, statusCode: 500, message: 'Internal Server Error' });
         }
-    }
+    },
+
+    DeleteDealer: async (req, res) => {
+        const { shopId } = req.params; // Extract shopId from the request parameters
+
+        // Check if shopId is provided
+        if (!shopId) {
+            return res.status(400).json({ result: false, statusCode: 400, message: 'Shop ID is required' });
+        }
+
+        try {
+            // Find the dealer by shopId
+            const dealer = await Dealer.findOne({ shopId });
+
+            // Check if dealer exists
+            if (!dealer) {
+                return res.status(404).json({ result: false, statusCode: 404, message: 'Dealer not found' });
+            }
+
+            // Delete the dealer
+            await Dealer.deleteOne({ shopId });
+
+            res.status(200).json({ result: true, statusCode: 200, message: 'Dealer deleted successfully' });
+        } catch (error) {
+            console.error('Error deleting dealer:', error); // Log the error
+            res.status(500).json({ result: false, statusCode: 500, message: 'Internal Server Error' });
+        }
+    },
+
+     UpdateDealer :async (req, res) => {
+        const { shopId } = req.params; // Get shopId from request parameters
+        const { shopName, contactPerson, email, gstNumber, FSSAINumber, contactNumber, password, isAllowLogin } = req.body;
+
+        // Validate the shopId input
+        if (!shopId) {
+            return res.status(400).json({ result: false, statusCode: 400, message: 'Shop ID is required' });
+        }
+
+        try {
+            // Find the dealer by shopId
+            const dealer = await Dealer.findOne({ shopId });
+
+            // Check if dealer exists
+            if (!dealer) {
+                return res.status(404).json({ result: false, statusCode: 404, message: 'Dealer not found' });
+            }
+
+            // Update only the fields provided in the request
+            if (shopName) dealer.shopName = shopName;
+            if (contactPerson) dealer.contactPerson = contactPerson;
+            if (email) dealer.email = email;
+            if (gstNumber) dealer.gstNumber = gstNumber;
+            if (FSSAINumber) dealer.FSSAINumber = FSSAINumber;
+            if (contactNumber) dealer.contactNumber = contactNumber;
+            if (password) dealer.password = password; // Update password
+            if (typeof isAllowLogin !== 'undefined') dealer.isAllowLogin = isAllowLogin;
+
+            // Save the updated dealer information
+            await dealer.save();
+
+            // Return the updated dealer data
+            const { password: omittedPassword, ...updatedDealer } = dealer._doc; // Exclude sensitive fields
+            res.status(200).json({ result: true, statusCode: 200, message: 'Dealer updated successfully', data: updatedDealer });
+        } catch (error) {
+            console.error('Error updating dealer:', error);
+            res.status(500).json({ result: false, statusCode: 500, message: 'Internal Server Error' });
+        }
+    },
 
 
 

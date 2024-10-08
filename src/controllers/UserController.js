@@ -37,11 +37,11 @@ const userController = {
     },
 
     getFactoryById: async (req, res) => {
-        const { id } = req.params;
+        const { factoryId } = req.params;
 
         try {
-            // Find the user with the specified id
-            const user = await User.findById(id);
+            // Find the user by factoryId
+            const user = await User.findOne({ factoryId });
 
             // Check if the user exists and has the role "Factory"
             if (!user || user.role !== "Factory") {
@@ -54,6 +54,7 @@ const userController = {
             res.status(500).send("Server Error");
         }
     },
+
     deleteFactory: async (req, res) => {
         const { id } = req.params;
 
