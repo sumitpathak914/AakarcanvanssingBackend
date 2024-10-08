@@ -177,7 +177,7 @@ const QuotationController = {
                     <body>
                         <div class="container">
                             <div class="header">
-                              <img src="http://localhost:5000/asset/AdminLogo.png" alt="Company Logo">
+                             
 
                                 <div class="details">
                                     <p><strong>Quotation ID:</strong> ${AddDetails.QuotationID}</p>
