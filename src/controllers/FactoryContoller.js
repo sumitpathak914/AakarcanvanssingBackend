@@ -35,11 +35,13 @@ const FactoryController = {
             res.status(500).json({ result: false, statusCode: 500, error: 'Failed to save factory data.' });
         }
     },
+
+    
     // GET all factories
     getAllFactories: async (req, res) => {
         try {
             const factories = await factory.find();
-            res.status(200).json({ result: true, statusCode: 201, factoriesList:factories, message: 'Factory data Get successfully.' });
+            res.status(200).json({ result: true, statusCode: 201, factoriesList: factories, message: 'Factory data Get successfully.' });
         } catch (error) {
             console.error('Error fetching factories:', error);
             res.status(500).json({ result: false, statusCode: 500, error: 'Failed to fetch factories.' });

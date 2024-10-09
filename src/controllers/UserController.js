@@ -74,6 +74,45 @@ const userController = {
             res.status(500).json({ result: false, statusCode: 500, error: 'Failed to delete factory.' });
         }
     },
+    UpdateFactory: async (req, res) => {
+        const factoryId = req.body.factoryId;
+        const updatedData = req.body;
+
+        try {
+            // Find factory by factoryId and update its data
+            const updatedFactory = await User.findOneAndUpdate(
+                { factoryId: factoryId }, // Search by factoryId (or use _id if preferred)
+                {
+                    $set: {
+                        factoryName: updatedData.factoryName,
+                        contactPerson: updatedData.contactPerson,
+                        contactNo: updatedData.contactNo,
+                        email: updatedData.email,
+                        website: updatedData.website,
+                        factoryAddress: updatedData.factoryAddress,
+                        city: updatedData.city,
+                        postalCode: updatedData.postalCode,
+                        country: updatedData.country,
+                        State: updatedData.State,
+                        FASSAINumber: updatedData.FASSAINumber,
+                        GSTNumber: updatedData.GSTNumber,
+                        products: updatedData.products,
+                        password: updatedData.password
+                    }
+                },
+                { new: true } // Return the updated document
+            );
+
+            if (updatedFactory) {
+                res.status(200).json({ result: true, statusCode: 200, message: 'Factory data updated successfully.', updatedFactory });
+            } else {
+                res.status(404).json({ result: false, statusCode: 404, message: 'Factory not found.' });
+            }
+        } catch (error) {
+            console.error('Error updating factory data:', error);
+            res.status(500).json({ result: false, statusCode: 500, error: 'Failed to update factory data.' });
+        }
+    },
 };
 
 module.exports = userController;

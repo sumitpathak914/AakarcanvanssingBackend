@@ -8,5 +8,5 @@ UserRouter.post('/GetFactories', authenticateToken, userController.getFactoriesB
 UserRouter.get('/GetAllFActories', authenticateToken, userController.getAllUsers);
 UserRouter.get('/factory/:factoryId', userController.getFactoryById);
 UserRouter.delete('/DeleteFactory/:id', userController.deleteFactory);
-
+UserRouter.put('/update-factory', userController.UpdateFactory);
 module.exports = UserRouter;

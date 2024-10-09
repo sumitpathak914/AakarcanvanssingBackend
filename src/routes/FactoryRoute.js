@@ -6,4 +6,5 @@ const authenticateToken = require('../middleware/auth');
 router.post('/AddFactory', authenticateToken, FactoryController.SaveFactory);
 router.get('/GetFactory', authenticateToken, FactoryController.getAllFactories);
 router.get('/FactoryCommission', FactoryController.calculateFactoryCommission);
+
 module.exports = router;
