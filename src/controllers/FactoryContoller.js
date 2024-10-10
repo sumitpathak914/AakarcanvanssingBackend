@@ -1,7 +1,8 @@
 const factory = require('../model/FactoryListModel');
 const Order = require('../model/OrderManagmentandDispatchModel');
-
-
+const PDFDocument = require('pdfkit'); // Import pdfkit
+const fs = require('fs'); // Import fs for file system operations
+const path = require('path');
 const FactoryController = {
 
     SaveFactory: async (req, res) => {
@@ -36,7 +37,7 @@ const FactoryController = {
         }
     },
 
-    
+
     // GET all factories
     getAllFactories: async (req, res) => {
         try {
@@ -112,7 +113,295 @@ const FactoryController = {
             console.error('Error calculating factory commissions:', error);
             res.status(500).json({ result: false, statusCode: 500, error: 'Failed to calculate commissions.' });
         }
-    }
+    },
+
+
+    // generateFactoryInvoice: async (req, res) => {
+    //     const { factoryId, startDate, endDate } = req.body;
+
+    //     try {
+    //         const start = new Date(startDate);
+    //         const end = new Date(endDate);
+    //         end.setHours(23, 59, 59, 999);
+
+    //         const orders = await Order.find({
+    //             'ProductDetails.SupplierInfo.FactoryId': factoryId,
+    //         });
+
+    //         if (!orders.length) {
+    //             return res.status(404).json({ message: 'No orders found for the selected date range.' });
+    //         }
+
+    //         const doc = new PDFDocument({ margin: 50 });
+    //         res.setHeader('Content-Type', 'application/pdf');
+    //         res.setHeader('Content-Disposition', `attachment; filename=invoice_${factoryId}_${Date.now()}.pdf`);
+    //         doc.pipe(res);
+
+    //         // Header Section
+    //         doc
+    //             .fontSize(18)
+    //             .text('Factory Super Market', { align: 'center' })
+    //             .moveDown()
+    //             .fontSize(12)
+    //             .text('Factory Address: ABC Street, City, Postal Code', { align: 'center' })
+    //             .text('Contact: 1234567890', { align: 'center' })
+    //             .moveDown(2);
+
+    //         // Invoice Details
+    //         doc
+    //             .fontSize(12)
+    //             .text(`Invoice No: 2500008515`, { align: 'left' })
+    //             .text(`Date: ${startDate} to ${endDate}`, { align: 'left' })
+    //             .moveDown(1); // Space before product list
+
+    //         let totalCommission = 0;
+    //         const productSummary = {}; // Object to consolidate product info
+
+    //         orders.forEach(order => {
+    //             const orderId = order.orderId; // Store the Order ID for each order
+    //             const customerInfo = order.customerInfo; // Get customer info for the order
+
+    //             order.ProductDetails.forEach(product => {
+    //                 if (product.dispatchShippingDetails?.DispatchStatus === 'Completed') {
+    //                     product.selection.forEach(selection => {
+    //                         const size = selection.size;
+    //                         const quantity = selection.quantity;
+
+    //                         let commissionRate;
+    //                         if (size === '30kg') {
+    //                             commissionRate = product.commission.supplier30Kg;
+    //                         } else if (size === '50kg') {
+    //                             commissionRate = product.commission.supplier50Kg;
+    //                         } else if (size === '70kg') {
+    //                             commissionRate = product.commission.supplier70Kg;
+    //                         }
+
+    //                         const commission = commissionRate ? commissionRate * quantity : 0;
+    //                         totalCommission += commission;
+
+    //                         // Consolidate product info
+    //                         const productKey = `${product.ProductName}-${orderId}`; // Key includes only ProductName and Order ID
+    //                         if (!productSummary[productKey]) {
+    //                             productSummary[productKey] = {
+    //                                 productName: product.ProductName,
+    //                                 sizes: {}, // To hold size and quantity
+    //                                 orderId: orderId, // Store the Order ID
+    //                                 totalCommission: 0, // Initialize total commission for this product
+    //                                 customerInfo: customerInfo // Store the customer info
+    //                             };
+    //                         }
+
+    //                         // Aggregate size and quantity
+    //                         if (!productSummary[productKey].sizes[size]) {
+    //                             productSummary[productKey].sizes[size] = 0;
+    //                         }
+    //                         productSummary[productKey].sizes[size] += quantity; // Aggregate quantity for the same size
+
+    //                         // Aggregate commission for the same product
+    //                         productSummary[productKey].totalCommission += commission;
+    //                     });
+    //                 }
+    //             });
+    //         });
+
+    //         // Generate the product list from the consolidated summary
+    //         for (const key in productSummary) {
+    //             const { productName, sizes, orderId, totalCommission, customerInfo } = productSummary[key];
+    //             const sizeQuantityPairs = Object.entries(sizes)
+    //                 .map(([size, quantity]) => `${size}- ${quantity}`)
+    //                 .join(', '); // Create the "Size-Quantity" string
+
+    //             doc.moveDown(0.5);
+    //             doc.fillColor('black').font('Helvetica').fontSize(11);
+    //             doc.text(`Order ID: ${orderId}`, { align: 'left' }); // Display Order ID
+    //             doc.text(`Product Name: ${productName}`, { align: 'left' });
+    //             doc.text(`Sizes and Quantities: ${sizeQuantityPairs}`, { align: 'left' });
+               
+
+    //             // Add customer info directly under the product details
+    //             doc.text(`Customer Name: ${customerInfo.CustomerName}`, { align: 'left' });
+    //             doc.text(`Shop Name: ${customerInfo.ShopName}`, { align: 'left' });
+    //             doc.text(`Email ID: ${customerInfo.EmailID}`, { align: 'left' });
+    //             doc.text(`Commission: ${totalCommission.toFixed(2)}`, { align: 'left' }); // 
+    //             doc.moveDown(0.5); // Space before next product section
+    //         }
+
+    //         // Footer Section: Total Commission
+    //         doc.moveDown(1); // Space before footer
+    //         doc.font('Helvetica-Bold').text(`Total Commission: ${totalCommission.toFixed(2)}`, { align: 'right' });
+
+    //         // Finalize PDF file
+    //         doc.end();
+    //     } catch (error) {
+    //         console.error('Error generating PDF invoice:', error);
+    //         res.status(500).json({ message: 'An error occurred while generating the invoice.' });
+    //     }
+    // },
+
+    
+
+    generateFactoryInvoice: async (req, res) => {
+        const { factoryId, startDate, endDate, factoryName, factoryAddress, factoryContact } = req.body;
+
+        try {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999);
+
+            const orders = await Order.find({
+                'ProductDetails.SupplierInfo.FactoryId': factoryId,
+            });
+
+            if (!orders.length) {
+                return res.status(404).json({ message: 'No orders found for the selected date range.' });
+            }
+
+            const doc = new PDFDocument({ margin: 50 });
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename=invoice_${factoryId}_${Date.now()}.pdf`);
+            doc.pipe(res);
+
+            // Generate an 8-digit random invoice number
+            const generateInvoiceNumber = () => {
+                // Generate a random 8-digit number between 10000000 and 99999999
+                return Math.floor(10000000 + Math.random() * 90000000).toString();
+            };
+
+            const invoiceNumber = generateInvoiceNumber(); 
+            doc
+                .fontSize(20)
+                .text(`${factoryName}`, { align: 'center' })
+                .moveDown()
+                .fontSize(12)
+                .text(`Factory Address: ${factoryAddress},`, { align: 'center' })
+                .text(`Contact:${factoryContact}`, { align: 'center' })
+                .moveDown(2)
+                .lineWidth(2)
+                .moveTo(50, doc.y)
+                .lineTo(550, doc.y)
+                .stroke()
+                .moveDown();
+
+            // Invoice Details
+            doc
+                .fontSize(14)
+                .text(`Invoice No: ${invoiceNumber}`, { align: 'left' })
+                .text(`Date Range: ${startDate} to ${endDate}`, { align: 'left' })
+                .moveDown(1);
+
+            let totalCommission = 0;
+            const productSummary = {}; // Object to consolidate product info
+
+           
+            // Loop through orders
+            orders.forEach(order => {
+                const orderId = order.orderId; // Store the Order ID for each order
+                const customerInfo = order.customerInfo; // Get customer info for the order
+
+                // Loop through ProductDetails to check each product's OrderDate and supplier's factory ID
+                order.ProductDetails.forEach(product => {
+                    const orderDate = new Date(product.OrderDate); // Convert OrderDate to a Date object
+
+                    // Check if the OrderDate is within the specified range and factory ID matches
+                    if (orderDate >= start && orderDate <= end && product.SupplierInfo.FactoryId === factoryId) {
+                        // Check if the order date is within the range and factory ID matches
+                        if (product.dispatchShippingDetails?.DispatchStatus === 'Completed') {
+                            product.selection.forEach(selection => {
+                                const size = selection.size;
+                                const quantity = selection.quantity;
+
+                                let commissionRate;
+                                if (size === '30kg') {
+                                    commissionRate = product.commission.supplier30Kg;
+                                } else if (size === '50kg') {
+                                    commissionRate = product.commission.supplier50Kg;
+                                } else if (size === '70kg') {
+                                    commissionRate = product.commission.supplier70Kg;
+                                }
+
+                                const commission = commissionRate ? commissionRate * quantity : 0;
+                                totalCommission += commission;
+
+                                // Consolidate product info
+                                const productKey = `${product.ProductName}-${orderId}`; // Key includes only ProductName and Order ID
+                                if (!productSummary[productKey]) {
+                                    productSummary[productKey] = {
+                                        productName: product.ProductName,
+                                        sizes: {}, // To hold size and quantity
+                                        orderId: orderId, // Store the Order ID
+                                        orderDate: orderDate.toISOString().split('T')[0], // Format order date as YYYY-MM-DD
+                                        totalCommission: 0, // Initialize total commission for this product
+                                        customerInfo: customerInfo // Store the customer info
+                                    };
+                                }
+
+                                // Aggregate size and quantity
+                                if (!productSummary[productKey].sizes[size]) {
+                                    productSummary[productKey].sizes[size] = 0;
+                                }
+                                productSummary[productKey].sizes[size] += quantity; // Aggregate quantity for the same size
+
+                                // Aggregate commission for the same product
+                                productSummary[productKey].totalCommission += commission;
+                            });
+                        }
+                    }
+                });
+            });
+
+
+            doc.moveDown(1);
+            doc.fontSize(12).fillColor('black');
+
+            for (const key in productSummary) {
+                const { productName, sizes, orderId, orderDate, totalCommission, customerInfo } = productSummary[key];
+                const sizeQuantityPairs = Object.entries(sizes)
+                    .map(([size, quantity]) => `${size}: ${quantity}`)
+                    .join(', '); // Create the "Size-Quantity" string
+
+                doc.moveDown(0.5);
+                doc.fillColor('black').font('Helvetica').fontSize(11);
+                doc.text(`Order ID: ${orderId}`, { align: 'left' });
+                doc.text(`Order Date: ${orderDate}`, { align: 'left' }); // Display the order date
+                doc.text(`Product Name: ${productName}`, { align: 'left' });
+                doc.text(`Sizes and Quantities: ${sizeQuantityPairs}`, { align: 'left' });
+                doc.text(`Customer Name: ${customerInfo.CustomerName}`, { align: 'left' });
+                doc.text(`Shop Name: ${customerInfo.ShopName}`, { align: 'left' });
+                doc.text(`Email ID: ${customerInfo.EmailID}`, { align: 'left' });
+                doc.text(`Commission: ${totalCommission.toFixed(2)}`, { align: 'left' });
+                doc.moveDown(0.5);
+            }
+
+            // Footer Section: Total Commission
+            doc.moveDown(1) // This creates space before the line
+                .lineWidth(2)
+                .moveTo(50, doc.y) // Get the current y position for the line
+                .lineTo(550, doc.y) // Draw the line across the page
+                .stroke(); // Render the line
+
+            // Add margin from the top
+            const footerMargin = 20; // Define the margin from the top
+            doc.moveDown(footerMargin / 14); // Convert margin to PDF points
+
+            doc.font('Helvetica-Bold')
+                .text(`Total Commission: ${totalCommission.toFixed(2)}`, { align: 'right' });
+
+            // Finalize PDF file
+            doc.end();
+        } catch (error) {
+            console.error('Error generating PDF invoice:', error);
+            res.status(500).json({ message: 'An error occurred while generating the invoice.' });
+        }
+    },
+
+
+
+
+
+
+
+
+
 
 
 
