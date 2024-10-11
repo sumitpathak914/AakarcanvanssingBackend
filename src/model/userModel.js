@@ -20,6 +20,7 @@ const UserSchema = new Schema({
         default: 'Factory'
     },
     factoryId: { type: String, unique: true },
+    CommissionDoneAmount: { type: String,},
     factoryName: { type: String, },
     contactPerson: { type: String, },
     contactNo: { type: String, },

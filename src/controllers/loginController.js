@@ -53,7 +53,7 @@ loginController.loginUser = async (req, res) => {
                             State: user.State,
                             FASSAINumber: user.FASSAINumber,
                             GSTNumber: user.GSTNumber,
-
+                            CommissionDoneAmount: user.CommissionDoneAmount,
                             contactNo: user.
                                 contactNo,
                             contactPerson: user.contactPerson,

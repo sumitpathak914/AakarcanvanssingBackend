@@ -12,6 +12,7 @@ registerController.registerUser = async (req, res) => {
         contactNo,
         website,
         factoryAddress,
+        CommissionDoneAmount,
         city,
         postalCode,
         country,
@@ -45,6 +46,7 @@ registerController.registerUser = async (req, res) => {
             contactNo,
             website,
             factoryAddress,
+            CommissionDoneAmount,
             city,
             postalCode,
             country,
@@ -89,6 +91,50 @@ registerController.registerUser = async (req, res) => {
             }
         );
 
+    } catch (err) {
+        console.error('Server Error:', err.message);
+        res.status(500).send({ result: false, statuscode: 500, message: 'Server Error' });
+    }
+};
+registerController.updateCommissionDoneAmount = async (req, res) => {
+    const { factoryId, amount } = req.body; // Receiving factoryId and amount to update
+    console.log("Received factoryId and amount:", req.body);
+
+    // Validate input
+    if (!factoryId || !amount || amount <= 0) {
+        return res.status(400).json({
+            result: false,
+            statuscode: 400,
+            message: 'Invalid factoryId or amount'
+        });
+    }
+
+    try {
+        // Find user by factoryId
+        let user = await User.findOne({ factoryId });
+        if (!user) {
+            return res.status(404).json({
+                result: false,
+                statuscode: 404,
+                message: 'Factory not found'
+            });
+        }
+
+        // Calculate the new CommissionDoneAmount
+        
+
+        // Update the CommissionDoneAmount
+        user.CommissionDoneAmount = (parseFloat(user.CommissionDoneAmount) || 0) + parseFloat(amount);
+
+        // Save the updated user
+        await user.save();
+
+        return res.json({
+            result: true,
+            statuscode: 200,
+            message: 'CommissionDoneAmount updated successfully',
+            CommissionDoneAmount: user.CommissionDoneAmount
+        });
     } catch (err) {
         console.error('Server Error:', err.message);
         res.status(500).send({ result: false, statuscode: 500, message: 'Server Error' });

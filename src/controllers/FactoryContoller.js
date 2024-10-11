@@ -3,6 +3,7 @@ const Order = require('../model/OrderManagmentandDispatchModel');
 const PDFDocument = require('pdfkit'); // Import pdfkit
 const fs = require('fs'); // Import fs for file system operations
 const path = require('path');
+const User = require('../model/userModel');
 const FactoryController = {
 
     SaveFactory: async (req, res) => {
@@ -16,6 +17,7 @@ const FactoryController = {
                 contactNo: factoryData.contactNo,
                 email: factoryData.email,
                 website: factoryData.website,
+                CommissionDoneAmount: factoryData.CommissionDoneAmount,
                 factoryAddress: factoryData.factoryAddress,
                 city: factoryData.city,
                 postalCode: factoryData.postalCode,
@@ -116,129 +118,8 @@ const FactoryController = {
     },
 
 
-    // generateFactoryInvoice: async (req, res) => {
-    //     const { factoryId, startDate, endDate } = req.body;
 
-    //     try {
-    //         const start = new Date(startDate);
-    //         const end = new Date(endDate);
-    //         end.setHours(23, 59, 59, 999);
 
-    //         const orders = await Order.find({
-    //             'ProductDetails.SupplierInfo.FactoryId': factoryId,
-    //         });
-
-    //         if (!orders.length) {
-    //             return res.status(404).json({ message: 'No orders found for the selected date range.' });
-    //         }
-
-    //         const doc = new PDFDocument({ margin: 50 });
-    //         res.setHeader('Content-Type', 'application/pdf');
-    //         res.setHeader('Content-Disposition', `attachment; filename=invoice_${factoryId}_${Date.now()}.pdf`);
-    //         doc.pipe(res);
-
-    //         // Header Section
-    //         doc
-    //             .fontSize(18)
-    //             .text('Factory Super Market', { align: 'center' })
-    //             .moveDown()
-    //             .fontSize(12)
-    //             .text('Factory Address: ABC Street, City, Postal Code', { align: 'center' })
-    //             .text('Contact: 1234567890', { align: 'center' })
-    //             .moveDown(2);
-
-    //         // Invoice Details
-    //         doc
-    //             .fontSize(12)
-    //             .text(`Invoice No: 2500008515`, { align: 'left' })
-    //             .text(`Date: ${startDate} to ${endDate}`, { align: 'left' })
-    //             .moveDown(1); // Space before product list
-
-    //         let totalCommission = 0;
-    //         const productSummary = {}; // Object to consolidate product info
-
-    //         orders.forEach(order => {
-    //             const orderId = order.orderId; // Store the Order ID for each order
-    //             const customerInfo = order.customerInfo; // Get customer info for the order
-
-    //             order.ProductDetails.forEach(product => {
-    //                 if (product.dispatchShippingDetails?.DispatchStatus === 'Completed') {
-    //                     product.selection.forEach(selection => {
-    //                         const size = selection.size;
-    //                         const quantity = selection.quantity;
-
-    //                         let commissionRate;
-    //                         if (size === '30kg') {
-    //                             commissionRate = product.commission.supplier30Kg;
-    //                         } else if (size === '50kg') {
-    //                             commissionRate = product.commission.supplier50Kg;
-    //                         } else if (size === '70kg') {
-    //                             commissionRate = product.commission.supplier70Kg;
-    //                         }
-
-    //                         const commission = commissionRate ? commissionRate * quantity : 0;
-    //                         totalCommission += commission;
-
-    //                         // Consolidate product info
-    //                         const productKey = `${product.ProductName}-${orderId}`; // Key includes only ProductName and Order ID
-    //                         if (!productSummary[productKey]) {
-    //                             productSummary[productKey] = {
-    //                                 productName: product.ProductName,
-    //                                 sizes: {}, // To hold size and quantity
-    //                                 orderId: orderId, // Store the Order ID
-    //                                 totalCommission: 0, // Initialize total commission for this product
-    //                                 customerInfo: customerInfo // Store the customer info
-    //                             };
-    //                         }
-
-    //                         // Aggregate size and quantity
-    //                         if (!productSummary[productKey].sizes[size]) {
-    //                             productSummary[productKey].sizes[size] = 0;
-    //                         }
-    //                         productSummary[productKey].sizes[size] += quantity; // Aggregate quantity for the same size
-
-    //                         // Aggregate commission for the same product
-    //                         productSummary[productKey].totalCommission += commission;
-    //                     });
-    //                 }
-    //             });
-    //         });
-
-    //         // Generate the product list from the consolidated summary
-    //         for (const key in productSummary) {
-    //             const { productName, sizes, orderId, totalCommission, customerInfo } = productSummary[key];
-    //             const sizeQuantityPairs = Object.entries(sizes)
-    //                 .map(([size, quantity]) => `${size}- ${quantity}`)
-    //                 .join(', '); // Create the "Size-Quantity" string
-
-    //             doc.moveDown(0.5);
-    //             doc.fillColor('black').font('Helvetica').fontSize(11);
-    //             doc.text(`Order ID: ${orderId}`, { align: 'left' }); // Display Order ID
-    //             doc.text(`Product Name: ${productName}`, { align: 'left' });
-    //             doc.text(`Sizes and Quantities: ${sizeQuantityPairs}`, { align: 'left' });
-               
-
-    //             // Add customer info directly under the product details
-    //             doc.text(`Customer Name: ${customerInfo.CustomerName}`, { align: 'left' });
-    //             doc.text(`Shop Name: ${customerInfo.ShopName}`, { align: 'left' });
-    //             doc.text(`Email ID: ${customerInfo.EmailID}`, { align: 'left' });
-    //             doc.text(`Commission: ${totalCommission.toFixed(2)}`, { align: 'left' }); // 
-    //             doc.moveDown(0.5); // Space before next product section
-    //         }
-
-    //         // Footer Section: Total Commission
-    //         doc.moveDown(1); // Space before footer
-    //         doc.font('Helvetica-Bold').text(`Total Commission: ${totalCommission.toFixed(2)}`, { align: 'right' });
-
-    //         // Finalize PDF file
-    //         doc.end();
-    //     } catch (error) {
-    //         console.error('Error generating PDF invoice:', error);
-    //         res.status(500).json({ message: 'An error occurred while generating the invoice.' });
-    //     }
-    // },
-
-    
 
     generateFactoryInvoice: async (req, res) => {
         const { factoryId, startDate, endDate, factoryName, factoryAddress, factoryContact } = req.body;
@@ -267,7 +148,7 @@ const FactoryController = {
                 return Math.floor(10000000 + Math.random() * 90000000).toString();
             };
 
-            const invoiceNumber = generateInvoiceNumber(); 
+            const invoiceNumber = generateInvoiceNumber();
             doc
                 .fontSize(20)
                 .text(`${factoryName}`, { align: 'center' })
@@ -292,7 +173,7 @@ const FactoryController = {
             let totalCommission = 0;
             const productSummary = {}; // Object to consolidate product info
 
-           
+
             // Loop through orders
             orders.forEach(order => {
                 const orderId = order.orderId; // Store the Order ID for each order
@@ -393,6 +274,126 @@ const FactoryController = {
             res.status(500).json({ message: 'An error occurred while generating the invoice.' });
         }
     },
+
+    calculateSingleFactoryCommission: async (req, res) => {
+        const { factoryId } = req.body; // Get the factoryId from the request body
+        try {
+            // Fetch orders for the requested factory
+            const orders = await Order.find({
+                'ProductDetails.SupplierInfo.FactoryId': factoryId,
+            });
+
+            // Fetch only the specific factory based on factoryId
+            const factory = await User.findOne({ factoryId: factoryId }); // Use findOne to get a single factory
+
+            const commissions = {};
+            const productCommissionDetails = {}; // Use an object to aggregate product details
+
+            // Loop through orders to calculate commissions
+            for (const order of orders) {
+                const orderId = order.orderId; // Capture the orderID
+
+                // Filter out only the products with DispatchStatus as 'Completed' and matching FactoryId
+                const completedProducts = order.ProductDetails.filter((product) => {
+                    return (
+                        product.dispatchShippingDetails.DispatchStatus === 'Completed' &&
+                        product.SupplierInfo.FactoryId === factoryId // Check if FactoryId matches
+                    );
+                });
+
+                // If there are no completed products in this order, skip this order
+                if (completedProducts.length === 0) {
+                    continue; // Move to the next order
+                }
+
+                // Process only completed products that match the factory
+                for (const product of completedProducts) {
+                    const commissionRates = product.commission; // Commission rates for different sizes
+
+                    for (const selection of product.selection) {
+                        const size = selection.size; // Product size (e.g., 30kg, 50kg, etc.)
+                        const quantity = selection.quantity; // Quantity ordered
+
+                        let commissionRate;
+                        // Check commission rate based on size
+                        if (size === '30kg') {
+                            commissionRate = commissionRates.supplier30Kg;
+                        } else if (size === '50kg') {
+                            commissionRate = commissionRates.supplier50Kg;
+                        } else if (size === '70kg') {
+                            commissionRate = commissionRates.supplier70Kg;
+                        }
+
+                        if (commissionRate) {
+                            // Calculate total commission for this product
+                            const totalCommission = commissionRate * quantity;
+
+                            // Initialize the commission for this factory if it doesn't exist
+                            if (!commissions[factoryId]) {
+                                commissions[factoryId] = 0;
+                            }
+
+                            // Add total commission to the factory's total commission
+                            commissions[factoryId] += totalCommission;
+
+                            // Create a unique key for the combination of orderId, productId, and size
+                            const key = `${orderId}-${product.ProductID}-${size}`;
+
+                            // If the product already exists, aggregate quantities
+                            if (productCommissionDetails[key]) {
+                                productCommissionDetails[key].quantity += quantity; // Aggregate the quantity
+                            } else {
+                                // Initialize a new entry for this product
+                                productCommissionDetails[key] = {
+                                    orderId: orderId,
+                                    productId: product.ProductID,
+                                    productName: product.ProductName,
+                                    size: size,
+                                    quantity: quantity,
+                                    commissionRate: commissionRate,
+                                    totalCommission: totalCommission,
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Convert the aggregated productCommissionDetails object to an array
+            const finalCommissionDetails = Object.values(productCommissionDetails).map(detail => {
+                return {
+                    orderId: detail.orderId,
+                    productId: detail.productId,
+                    productName: detail.productName,
+                    size: detail.size,
+                    quantity: detail.quantity,
+                    commissionRate: detail.commissionRate,
+                    totalCommission: detail.totalCommission,
+                };
+            });
+
+            // Check if the factory exists and has CommissionDoneAmount
+            const factoryCommissionDoneAmount = factory ? factory.CommissionDoneAmount : 0;
+
+            res.status(200).json({
+                result: true,
+                statusCode: 200,
+                totalFactoryCommission: commissions[factoryId] || 0, // Ensure 0 if no commissions
+                productCommissionDetails: finalCommissionDetails,
+                factoriesPaymentDoneAmount: factoryCommissionDoneAmount, // Send the specific factory's CommissionDoneAmount
+            });
+        } catch (error) {
+            console.error('Error calculating factory commissions:', error);
+            res.status(500).json({
+                result: false,
+                statusCode: 500,
+                error: 'Failed to calculate commissions.',
+            });
+        }
+    },
+
+
+
 
 
 

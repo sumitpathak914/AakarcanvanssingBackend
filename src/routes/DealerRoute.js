@@ -14,4 +14,5 @@ Dealerrouter.delete('/dealerDelete/:shopId', DealerContoller.DeleteDealer);
 // Dealerrouter.put('/dealersUpdate/:shopId', DealerContoller.UpdateDealer);
 Dealerrouter.put('/update/:shopId', DealerContoller.UpdateDealer);
 Dealerrouter.post('/generate-Dealer-invoice', DealerContoller.generateDealerInvoice);
+Dealerrouter.post('/UpdateCommissionAmountDealer', DealerContoller.UpdateDealerCommission);
 module.exports = Dealerrouter;

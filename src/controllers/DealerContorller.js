@@ -7,7 +7,7 @@ const path = require('path');
 const FactoryController = {
 
     SaveDealer: async (req, res) => {
-        const { shopName, contactPerson, email, gstNumber, password, confirmPassword, FSSAINumber, contactNumber } = req.body;
+        const { shopName, contactPerson, email, gstNumber, password, confirmPassword, FSSAINumber, contactNumber, CommissionDoneAmount } = req.body;
 
         // Check for missing fields
         if (!shopName) {
@@ -54,6 +54,7 @@ const FactoryController = {
                 email,
                 gstNumber,
                 password,
+                CommissionDoneAmount,
                 confirmPassword, FSSAINumber,
                 contactNumber
             });
@@ -467,6 +468,42 @@ const FactoryController = {
             res.status(500).json({ message: 'An error occurred while generating the invoice.' });
         }
     },
+    UpdateDealerCommission: async (req, res) => {
+        const { shopId, CommissionDoneAmount } = req.body; // Get shopId and commission amount from the request body
+
+        // Validate the input
+        if (!shopId) {
+            return res.status(400).json({ result: false, statusCode: 400, message: 'Shop ID is required' });
+        }
+
+        
+        
+
+        try {
+            // Find the dealer by shopId
+            const dealer = await Dealer.findOne({ shopId });
+
+            // Check if dealer exists
+            if (!dealer) {
+                return res.status(404).json({ result: false, statusCode: 404, message: 'Dealer not found' });
+            }
+
+            // Update the commission amount
+            
+            dealer.CommissionDoneAmount = (parseFloat(dealer.CommissionDoneAmount) || 0) + parseFloat(CommissionDoneAmount);
+
+            // Save the updated dealer information
+            await dealer.save();
+
+            // Return the updated dealer data
+            const { password, confirmPassword, ...updatedDealer } = dealer._doc; // Exclude sensitive fields
+            res.status(200).json({ result: true, statusCode: 200, message: 'Commission amount updated successfully', data: updatedDealer });
+        } catch (error) {
+            console.error('Error updating commission amount:', error);
+            res.status(500).json({ result: false, statusCode: 500, message: 'Internal Server Error' });
+        }
+    }
+
 
 
 
