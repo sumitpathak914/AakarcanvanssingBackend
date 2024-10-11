@@ -72,12 +72,12 @@ const addTransaction = async (req, res) => {
 
         // Add additional details based on payment method
         if (PaymentMethod === 'bank') {
-            if (!BankDetails || !BankDetails.BankName || !BankDetails.AccountHolderName || !BankDetails.AccountNumber || !BankDetails.IFSCCode) {
+            if (!BankDetails || !BankDetails.BankName) {
                 return res.status(400).json({ result: false, statusCode: 400, message: 'Missing bank details.' });
             }
             newTransactionRecord.BankDetails = BankDetails;
         } else if (PaymentMethod === 'cheque') {
-            if (!chequeDetails || !chequeDetails.BankName || !chequeDetails.AccountHolderName || !chequeDetails.ChequeNumber || !chequeDetails.PaymentAmount) {
+            if (!chequeDetails || !chequeDetails.BankName || !chequeDetails.PaymentAmount) {
                 return res.status(400).json({ result: false, statusCode: 400, message: 'Missing cheque details.' });
             }
             newTransactionRecord.ChequeDetails = chequeDetails;
