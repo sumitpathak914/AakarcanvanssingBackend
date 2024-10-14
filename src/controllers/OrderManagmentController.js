@@ -455,22 +455,34 @@ const orderController = {
         try {
             const { factoryId } = req.params; // Assuming factoryId is passed as a URL parameter
 
-            // Fetch orders for the specific factory using the factoryId in SupplierInfo
+            // Fetch orders that contain any product with the matching factoryId in SupplierInfo
             const orders = await Order.find({ 'ProductDetails.SupplierInfo.FactoryId': factoryId });
 
-            // Collect all products that match the criteria into a single array
+            // Collect only products from the matching factoryId
             const filteredProducts = [];
 
             orders.forEach(order => {
-                order.ProductDetails.forEach(product => {
-                    if (product.dispatchShippingDetails?.OrderStatus === 'Shipped') {
-                        filteredProducts.push({
-                            ...product.toObject(),
-                            customerInfo: order.customerInfo,
-                            orderId: order.orderId,
-                            Duepayment: order.Duepayment
-                        });
-                    }
+                // Filter products that match the factoryId and have an OrderStatus of 'Shipped'
+                const matchingProducts = order.ProductDetails.filter(product => {
+                    return product.SupplierInfo.FactoryId === factoryId && product.dispatchShippingDetails?.OrderStatus === 'Shipped';
+                });
+
+                // For each matching product, push only the relevant fields
+                matchingProducts.forEach(product => {
+                    filteredProducts.push({
+                        ProductID: product.ProductID,
+                        OrderDate: product.OrderDate,
+                        ProductName: product.ProductName,
+                        MRP: product.MRP,
+                        discount: product.discount,
+                        selection: product.selection,
+                        dispatchShippingDetails: product.dispatchShippingDetails,
+                        orderId: order.orderId,
+                        customerInfo: order.customerInfo,
+                        Duepayment: order.Duepayment,
+                        selectedImages: product.selectedImages,
+                        SupplierInfo: product.SupplierInfo
+                    });
                 });
             });
 
@@ -484,6 +496,9 @@ const orderController = {
             res.status(500).json({ message: 'Server error', error });
         }
     },
+
+
+
 
     AddDetailsOfDispatch: async (req, res) => {
         try {
