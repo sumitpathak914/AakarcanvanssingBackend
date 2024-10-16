@@ -31,7 +31,8 @@ const productSchema = new Schema({
     isVisible: { type: Boolean, default: '' },
     action: { type: String, default: '' },
     selectedImages: [{ type: String }],  // Assuming these are URLs or paths to images
-    Commission: commissionSchema
+    Commission: commissionSchema,
+    DealWeek: { type:Boolean, default: false },
 });
 
 // Create a model based on the schema

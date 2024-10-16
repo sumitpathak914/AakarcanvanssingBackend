@@ -22,6 +22,12 @@ const transactionRouter = require('./src/routes/TrasactionRecordsRoute');
 const PaymentRequestrouter = require('./src/routes/PaymentRequestRoute');
 
 const PurchaseReturnrouter = require('./src/routes/PurchaseReturnRoute');
+const Bannerrouter = require('./src/routes/AddBannerRoute');
+const dealWeekrouter = require('./src/routes/DealOfTheWeekRoute');
+const CountRouter = require('./src/routes/CountPageRoute');
+const Testimonialsrouter = require('./src/routes/TestimonalsRoute');
+const TermsAndConditionrouter = require('./src/routes/TermsAndConditionRoute');
+const Contactrouter = require('./src/routes/ContactRoute');
 
 const app = express();
 
@@ -49,11 +55,14 @@ app.use('/Dealer', Dealerrouter);
 app.use('/', transactionRouter);
 app.use('/payments', PaymentRequestrouter);
 app.use('/purchase-return', PurchaseReturnrouter);
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/asset', express.static(path.join(__dirname, 'src', 'asset')));
-
-
-
+app.use('/HomeBanner', Bannerrouter);
+app.use('/', dealWeekrouter);
+app.use('/', CountRouter);
+app.use('/', Testimonialsrouter);
+app.use('/', TermsAndConditionrouter);
+app.use('/', Contactrouter)
+app.use('/uploads', express.static(path.join(__dirname, './src/uploads')));
 // MongoDB connection
 mongoose
     .connect(process.env.MONGODB_URI)
