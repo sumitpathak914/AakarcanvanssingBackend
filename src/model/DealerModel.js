@@ -30,7 +30,8 @@ const dealerSchema = new mongoose.Schema({
     password: { type: String,  },
     contactNumber: { type: Number },
     confirmPassword: { type: String,}, 
-    isAllowLogin: { type: Boolean, default: false }
+    isAllowLogin: { type: Boolean, default: false },
+    OTP: { type: String, default: ""}
 });
 
 // Pre-save hook to set the unique shopId

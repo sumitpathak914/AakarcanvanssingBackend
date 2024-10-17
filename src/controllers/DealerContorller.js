@@ -4,6 +4,10 @@ const jwt = require('jsonwebtoken');
 const PDFDocument = require('pdfkit'); // Import pdfkit
 const fs = require('fs'); // Import fs for file system operations
 const path = require('path');
+const nodemailer = require('nodemailer');
+const generateOTP = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+};
 const FactoryController = {
 
     SaveDealer: async (req, res) => {
@@ -277,7 +281,7 @@ const FactoryController = {
         }
     },
 
-     UpdateDealer :async (req, res) => {
+    UpdateDealer: async (req, res) => {
         const { shopId } = req.params; // Get shopId from request parameters
         const { shopName, contactPerson, email, gstNumber, FSSAINumber, contactNumber, password, isAllowLogin } = req.body;
 
@@ -327,9 +331,9 @@ const FactoryController = {
 
             // Fetch all orders with the matching ShopId
             const orders = await Order.find({
-                ShopId:shopId,
+                ShopId: shopId,
             });
-           
+
             if (!orders.length) {
                 return res.status(404).json({ message: 'No orders found for the selected date range.' });
             }
@@ -424,7 +428,7 @@ const FactoryController = {
             for (const key in productSummary) {
                 const { productName, sizes, orderId, orderDate, totalCommission, supplierInfo } = productSummary[key];
 
-               
+
 
                 const sizeQuantityPairs = Object.entries(sizes)
                     .map(([size, quantity]) => `${size}: ${quantity}`)
@@ -476,8 +480,8 @@ const FactoryController = {
             return res.status(400).json({ result: false, statusCode: 400, message: 'Shop ID is required' });
         }
 
-        
-        
+
+
 
         try {
             // Find the dealer by shopId
@@ -489,7 +493,7 @@ const FactoryController = {
             }
 
             // Update the commission amount
-            
+
             dealer.CommissionDoneAmount = (parseFloat(dealer.CommissionDoneAmount) || 0) + parseFloat(CommissionDoneAmount);
 
             // Save the updated dealer information
@@ -502,7 +506,166 @@ const FactoryController = {
             console.error('Error updating commission amount:', error);
             res.status(500).json({ result: false, statusCode: 500, message: 'Internal Server Error' });
         }
-    }
+    },
+    forgotPassword: async (req, res) => {
+        const { email } = req.body;
+
+        try {
+            // Check if dealer exists
+            const dealer = await Dealer.findOne({ email });
+            if (!dealer) {
+                return res.status(404).json({ message: 'Dealer not found.' });
+            }
+
+            // Generate a new OTP and update the dealer's document
+            const otp = generateOTP();
+            dealer.OTP = otp;
+
+            // Set OTP to expire after 1 minute (60000 milliseconds)
+            setTimeout(async () => {
+                dealer.OTP = ""; // Clear the OTP after 1 minute
+                await dealer.save(); // Save the updated dealer document
+            }, 60000);
+
+            await dealer.save(); // Save the dealer with the new OTP
+
+            // Set up Nodemailer transporter
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                port: 587,
+                secure: false,
+                auth: {
+                    user: 'sumitpathakofficial914@gmail.com',
+                    pass: 'awtiquudehddpias' // Make sure to secure this using environment variables
+                }
+            });
+
+            // Email options
+            const mailOptions = {
+                from: 'your-email@gmail.com', // Your email address
+                to: dealer.email, // Recipient's email
+                subject: 'Password Reset OTP',
+                text: `Your OTP for password reset is: ${otp}`,
+                html: `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Password Reset OTP</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f6f6f6;
+                        color: #333;
+                        margin: 0;
+                        padding: 20px;
+                    }
+                    .container {
+                        background-color: #fff;
+                        border-radius: 5px;
+                        padding: 20px;
+                        max-width: 600px;
+                        margin: auto;
+                        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                    }
+                    h1 {
+                        font-size: 24px;
+                        margin-bottom: 20px;
+                        color: #4C3F35;
+                    }
+                    p {
+                        font-size: 16px;
+                        line-height: 1.5;
+                    }
+                    .otp {
+                        font-size: 24px;
+                        font-weight: bold;
+                        color: #4C3F35;
+                        margin: 20px 0;
+                    }
+                    .footer {
+                        margin-top: 30px;
+                        font-size: 14px;
+                        text-align: center;
+                        color: #777;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>Password Reset Request</h1>
+                    <p>Hello,</p>
+                    <p>Your OTP for password reset is:</p>
+                    <div class="otp">${otp}</div>
+                    <p>This OTP is valid for a short period of time. Please do not share it with anyone.</p>
+                    <div class="footer">
+                        <p>Thank you,<br>Aakar Canvassing</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+        `,
+            };
+
+            // Send email
+            await transporter.sendMail(mailOptions);
+            res.status(200).json({ message: 'OTP sent to your email.' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Server error.' });
+        }
+    },
+    verifyOtp: async (req, res) => {
+        const { email, otp } = req.body;
+
+        try {
+            // Check if dealer exists
+            const dealer = await Dealer.findOne({ email });
+            if (!dealer) {
+                return res.status(404).json({ message: 'Dealer not found.' });
+            }
+
+            // Check if the OTP matches and is not empty
+            if (dealer.OTP === otp && dealer.OTP !== "") {
+                // OTP is valid
+                dealer.OTP = ""; // Clear the OTP after successful verification
+                await dealer.save(); // Save the updated dealer document
+                return res.status(200).json({ message: 'OTP verified successfully.' });
+            } else {
+                // OTP is invalid
+                return res.status(400).json({ message: 'Invalid OTP or OTP has expired.' });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Server error.' });
+        }
+    },
+    // In your dealer controller file
+    resetPassword: async (req, res) => {
+        const { email, newPassword } = req.body;
+
+        try {
+            // Find the dealer by email
+            const dealer = await Dealer.findOne({ email });
+            if (!dealer) {
+                return res.status(404).json({ message: 'Dealer not found.' });
+            }
+
+            // Directly set the new password (not recommended for production)
+            dealer.password = newPassword; // Assuming you have a password field in your model
+            dealer.OTP = ""; // Optionally clear the OTP field after password reset
+
+            await dealer.save(); // Save the updated dealer document
+            res.status(200).json({ message: 'Password reset successfully.' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Server error.' });
+        }
+    },
+
+
+
 
 
 

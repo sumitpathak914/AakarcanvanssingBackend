@@ -15,4 +15,7 @@ Dealerrouter.delete('/dealerDelete/:shopId', DealerContoller.DeleteDealer);
 Dealerrouter.put('/update/:shopId', DealerContoller.UpdateDealer);
 Dealerrouter.post('/generate-Dealer-invoice', DealerContoller.generateDealerInvoice);
 Dealerrouter.post('/UpdateCommissionAmountDealer', DealerContoller.UpdateDealerCommission);
+Dealerrouter.post('/forgot-password', DealerContoller.forgotPassword);
+Dealerrouter.post('/verify-otp', DealerContoller.verifyOtp);
+Dealerrouter.post('/reset-password', DealerContoller.resetPassword);
 module.exports = Dealerrouter;
