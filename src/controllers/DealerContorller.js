@@ -34,7 +34,7 @@ const FactoryController = {
 
         // Check if passwords match
         if (password !== confirmPassword) {
-            return res.status(400).json({ result: false, statusCode: 400, message: 'Passwords do not match' });
+            return res.status(400).json({ result: false, statusCode: 400, message: 'The password and confirm password do not match.' });
         }
 
         try {
