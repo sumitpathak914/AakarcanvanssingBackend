@@ -299,6 +299,14 @@ const FactoryController = {
                 return res.status(404).json({ result: false, statusCode: 404, message: 'Dealer not found' });
             }
 
+            // If an email is provided, check if it is already in use by another dealer
+            if (email && email !== dealer.email) {
+                const existingDealer = await Dealer.findOne({ email });
+                if (existingDealer) {
+                    return res.status(400).json({ result: false, statusCode: 400, message: 'Email already in use, please use a different email' });
+                }
+            }
+
             // Update only the fields provided in the request
             if (shopName) dealer.shopName = shopName;
             if (contactPerson) dealer.contactPerson = contactPerson;
@@ -320,6 +328,7 @@ const FactoryController = {
             res.status(500).json({ result: false, statusCode: 500, message: 'Internal Server Error' });
         }
     },
+
 
     generateDealerInvoice: async (req, res) => {
         const { shopId, startDate, endDate, shopName, shopContact } = req.body;
