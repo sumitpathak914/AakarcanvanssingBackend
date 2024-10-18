@@ -1,7 +1,7 @@
-// models/Contact.js
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const contactSchema = new mongoose.Schema({
+const contactDetailsSchema = new Schema({
     name: {
         type: String,
         required: true,
@@ -31,6 +31,14 @@ const contactSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
+});
+
+const contactSchema = new Schema({
+    contactInfo: [contactDetailsSchema], // Array of contact details
+    count: {
+        type: String,
+        default: "0"
+    },
 });
 
 module.exports = mongoose.model('Contact', contactSchema);

@@ -525,7 +525,7 @@ const FactoryController = {
             setTimeout(async () => {
                 dealer.OTP = ""; // Clear the OTP after 1 minute
                 await dealer.save(); // Save the updated dealer document
-            }, 60000);
+            }, 120000);
 
             await dealer.save(); // Save the dealer with the new OTP
 

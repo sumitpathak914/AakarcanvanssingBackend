@@ -23,8 +23,28 @@ exports.submitContactForm = async (req, res) => {
     }
 
     try {
-        // Create and save new contact entry
-        const newContact = new Contact({
+        // Find the existing contact document (assuming only one document stores contact info)
+        let contactRecord = await Contact.findOne();
+
+        // If no record exists, create one with the first entry
+        if (!contactRecord) {
+            contactRecord = new Contact({
+                contactInfo: [{
+                    name,
+                    email,
+                    phone,
+                    subject,
+                    message
+                }],
+                count: "1"
+            });
+
+            await contactRecord.save();
+            return res.status(201).json({ message: 'Form submitted successfully and new contact created!' });
+        }
+
+        // If record exists, push new contact info to the array
+        contactRecord.contactInfo.push({
             name,
             email,
             phone,
@@ -32,13 +52,19 @@ exports.submitContactForm = async (req, res) => {
             message
         });
 
-        await newContact.save();
+        // Increment the count
+        contactRecord.count = (parseInt(contactRecord.count) + 1).toString();
 
-        res.status(201).json({ message: 'Form submitted successfully!' });
+        // Save the updated record
+        await contactRecord.save();
+
+        res.status(201).json({ message: 'Form submitted successfully and contact added to the existing record!' });
     } catch (error) {
         res.status(500).json({ error: 'Server error. Please try again later.' });
     }
 };
+
+
 // @desc   Get all contact form submissions
 exports.getContacts = async (req, res) => {
     try {
@@ -52,6 +78,56 @@ exports.getContacts = async (req, res) => {
 
         // Send the list of contacts
         res.status(200).json(contacts);
+    } catch (error) {
+        res.status(500).json({ error: 'Server error. Please try again later.' });
+    }
+};
+
+
+exports.deleteContact = async (req, res) => {
+    const { contactId } = req.params; // Get contactInfo._id from params
+
+    try {
+        // Find the contact record
+        let contactRecord = await Contact.findOne();
+
+        if (!contactRecord) {
+            return res.status(404).json({ message: 'No contact record found.' });
+        }
+
+        // Find the specific contact within the contactInfo array and remove it
+        contactRecord.contactInfo = contactRecord.contactInfo.filter(
+            (contact) => contact._id.toString() !== contactId
+        );
+
+       
+
+        // Save the updated record
+        await contactRecord.save();
+
+        res.status(200).json({ message: 'Contact deleted successfully.' });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error. Please try again later.' });
+    }
+};
+
+// @desc   Reset count for all contacts to zero
+exports.resetCount = async (req, res) => {
+    try {
+        // Find the contact record
+        let contactRecord = await Contact.findOne();
+
+        if (!contactRecord) {
+            return res.status(404).json({ message: 'No contact record found.' });
+        }
+
+        // Reset count to zero
+        contactRecord.count = "0";
+
+        // Save the updated record
+        await contactRecord.save();
+
+        res.status(200).json({ message: 'Count reset to 0 successfully.' });
     } catch (error) {
         res.status(500).json({ error: 'Server error. Please try again later.' });
     }
