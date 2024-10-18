@@ -9,7 +9,8 @@ const authenticateToken = require('../middleware/auth');
 
 // Define routes with multer middleware
 
-router.post('/AddQuate', authenticateToken, QuatationController.saveQuotation);
-router.get('/GetAllQuote', authenticateToken, QuatationController.getQuotations);
-
+router.post('/AddQuate', QuatationController.saveQuotation);
+router.get('/GetAllQuote', QuatationController.getQuotations);
+router.get('/GetQuoteDetails/:id', QuatationController.getRecordById);
+router.delete('/DeleteQuote/:id', QuatationController.deleteRecordById);
 module.exports = router;

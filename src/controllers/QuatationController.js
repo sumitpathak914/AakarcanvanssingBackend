@@ -342,7 +342,38 @@ const QuotationController = {
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
-    }
+    },
+     getRecordById : async (req, res) => {
+        try {
+            const id = req.params.id; // Get ID from the request parameters
+            const record = await Quotation.findById(id); // Fetch the record by ID
+
+            if (!record) {
+                return res.status(404).json({ message: 'Record not found' });
+            }
+
+            res.status(200).json(record); // Send the record back as a response
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Server error' });
+        }
+    },
+     deleteRecordById : async (req, res) => {
+        try {
+            const id = req.params.id; // Get ID from the request parameters
+            const deletedRecord = await Quotation.findByIdAndDelete(id); // Delete the record by ID
+
+            if (!deletedRecord) {
+                return res.status(404).json({ message: 'Record not found' });
+            }
+
+            res.status(200).json({ message: 'Record deleted successfully' }); // Send a success message
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Server error' });
+        }
+    },
+
 };
 
 module.exports = QuotationController;
