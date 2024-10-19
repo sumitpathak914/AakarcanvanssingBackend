@@ -20,4 +20,5 @@ OrderRouter.post('/ChangeTheOrderStatus', authenticateToken, OrderManagmentContr
 OrderRouter.post('/ChangeRefundOrderStatus', authenticateToken, OrderManagmentController.ChangeReturnOrderStatus);
 OrderRouter.get('/getOrdersByShopId/:ShopId', OrderManagmentController.getOrdersByShopId);
 OrderRouter.post('/GetOrderDetails_ForPurchase', authenticateToken, OrderManagmentController.GetOrderDetailsForReturn);
+OrderRouter.get('/getOrdersByShopIdWithStatus/:ShopId', OrderManagmentController.getOrdersByShopIdWithStatus);
 module.exports = OrderRouter;

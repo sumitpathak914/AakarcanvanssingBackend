@@ -12,9 +12,9 @@ const transporter = nodemailer.createTransport({
 });
 const orderController = {
 
-    
 
-   
+
+
     //  CreateOrder : async (req, res) => {
     //     try {
     //         // Destructure the relevant fields from the request body
@@ -97,11 +97,11 @@ const orderController = {
 
             // Determine which payment details to include based on PaymentMethod
             const transactionData = {
-                PaymentDoneAmount,  
+                PaymentDoneAmount,
                 Duepayment,
-                Total,  
+                Total,
                 PaymentMethod,
-                
+
             };
 
             // Create a new Order instance with the payment details
@@ -118,7 +118,7 @@ const orderController = {
                 customerInfo,
                 PaymentMethod,
                 ProductDetails,
-                
+
                 TransactionData: [transactionData] // Add the constructed array here
             });
 
@@ -169,6 +169,71 @@ const orderController = {
             });
         }
     },
+    getOrdersByShopIdWithStatus: async (req, res) => {
+        try {
+            const { ShopId } = req.params;
+            const { status } = req.query; // Capture the status from query parameters
+
+            // Fetch orders where ShopId matches
+            const orders = await Order.find({ ShopId });
+
+            if (!orders.length) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'No orders found for the provided ShopId',
+                });
+            }
+
+            // Filter orders based on the provided status
+            let filteredOrders = [];
+
+            if (status === 'OrderPlace') {
+                // Filter orders where at least one product has OrderStatus as "Pending"
+                filteredOrders = orders.filter(order =>
+                    order.ProductDetails.some(product => product.dispatchShippingDetails.OrderStatus === 'Pending')
+                );
+            } else if (status === 'delivered') {
+                // Filter orders where at least one product has DispatchStatus as "Completed"
+                filteredOrders = orders.filter(order =>
+                    order.ProductDetails.some(product => product.dispatchShippingDetails.DispatchStatus === 'Completed')
+                );
+            } else if (status === 'cancelled') {
+                // Filter orders where at least one product has OrderStatus as "Cancelled"
+                filteredOrders = orders.filter(order =>
+                    order.ProductDetails.some(product => product.dispatchShippingDetails.OrderStatus === 'Cancelled')
+                );
+            } else if (status === 'returned') {
+                // Filter orders where at least one product has DispatchStatus as "Return"
+                filteredOrders = orders.filter(order =>
+                    order.ProductDetails.some(product => product.dispatchShippingDetails.DispatchStatus === 'Return')
+                );
+            } else {
+                // If no valid status is provided, return all orders
+                filteredOrders = orders;
+            }
+
+            if (filteredOrders.length > 0) {
+                res.status(200).json({
+                    success: true,
+                    message: 'Orders found',
+                    OrderList: filteredOrders,
+                });
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: `No orders found for the status: ${status}`,
+                    OrderList: [],
+                });
+            }
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: 'Server error',
+                error: error.message,
+            });
+        }
+    },
+
     GetOrderDetails: async (req, res) => {
         try {
             const { orderId, productId } = req.body;
@@ -217,7 +282,7 @@ const orderController = {
     //             return res.status(404).json({ result: false, statusCode: 404, message: 'Order not found.' });
     //         }
 
-            
+
 
     //         // Extract customerInfo
     //         const customerInfo = order.customerInfo;
@@ -583,7 +648,7 @@ const orderController = {
                 product.OrderTrackingDetails.Out_for_Delivery = true;
                 product.OrderTrackingDetails.Out_for_Delivery_Note = note || 'Your order is out for delivery';
             } else {
-                
+
                 product.OrderTrackingDetails.Out_for_Delivery = true;
                 product.OrderTrackingDetails.Out_for_Delivery_Note = note || 'Your order is out for delivery';
                 product.OrderTrackingDetails.Delivered = true;

@@ -1,6 +1,6 @@
 // Import the Product model
 const Product = require('../model/AddProductModel'); // Adjust the path as per your project structure
-
+const UserReview = require('../model/ProductReviewModel');
 // Controller methods
 const productController = {
     // Create a new product
@@ -73,10 +73,46 @@ const productController = {
             res.status(500).json({ result: false, statusCode: 500, message: err.message });
         }
     },
-    getAllProductsForEcommerce: async (req, res) => {
+    // getAllProductsForEcommerce: async (req, res) => {
+    //     try {
+    //         const productsList = await Product.find({ isVisible: true });
+    //         res.status(200).json({ result: true, statusCode: 200, productsList });
+    //     } catch (err) {
+    //         res.status(500).json({ result: false, statusCode: 500, message: err.message });
+    //     }
+    // },
+
+    getAllProductsForEcommerce : async (req, res) => {
         try {
+            // Fetch the products that are visible
             const productsList = await Product.find({ isVisible: true });
-            res.status(200).json({ result: true, statusCode: 200, productsList });
+
+            // Use Promise.all to fetch review counts and average ratings for all products
+            const productsWithReviews = await Promise.all(productsList.map(async (product) => {
+                // Fetch reviews for the current product
+                const reviews = await UserReview.find({ productId: product._id });
+
+                // Calculate review count
+                const reviewCount = reviews.length;
+
+                // Calculate average star rating
+                const averageRating = reviewCount > 0
+                    ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviewCount) // Average as a number
+                    : 0; // Default to 0 if no reviews
+
+                // Return a new product object with the review count and average rating
+                return {
+                    ...product.toObject(), // Convert Mongoose document to plain object
+                    reviewCount,           // Add the review count
+                    averageRating,         // Add the average rating as a number
+                };
+            }));
+
+            res.status(200).json({
+                result: true,
+                statusCode: 200,
+                productsList: productsWithReviews,
+            });
         } catch (err) {
             res.status(500).json({ result: false, statusCode: 500, message: err.message });
         }
@@ -245,7 +281,7 @@ const productController = {
             });
         }
     },
-    
+
 };
 
 module.exports = productController;

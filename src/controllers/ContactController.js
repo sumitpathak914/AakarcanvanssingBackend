@@ -17,7 +17,7 @@ exports.submitContactForm = async (req, res) => {
     }
 
     // Validate phone number
-    const phoneRegex = /^\d{10,15}$/;
+    const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(phone)) {
         return res.status(400).json({ error: 'Please enter a valid phone number.' });
     }
@@ -100,7 +100,7 @@ exports.deleteContact = async (req, res) => {
             (contact) => contact._id.toString() !== contactId
         );
 
-       
+
 
         // Save the updated record
         await contactRecord.save();
