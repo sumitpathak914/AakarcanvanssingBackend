@@ -11,11 +11,14 @@ const generateOTP = () => {
 const FactoryController = {
 
     SaveDealer: async (req, res) => {
-        const { shopName, contactPerson, email, gstNumber, password, confirmPassword, FSSAINumber, contactNumber, CommissionDoneAmount } = req.body;
+        const { shopName, contactPerson, email, gstNumber, password, confirmPassword, FSSAINumber, contactNumber, CommissionDoneAmount, ShopAddress } = req.body;
 
         // Check for missing fields
         if (!shopName) {
             return res.status(400).json({ result: false, statusCode: 400, message: 'Shop name is required' });
+        }
+        if (!ShopAddress) {
+            return res.status(400).json({ result: false, statusCode: 400, message: 'Shop Address is required' });
         }
         if (!contactPerson) {
             return res.status(400).json({ result: false, statusCode: 400, message: 'Contact person is required' });
@@ -60,7 +63,8 @@ const FactoryController = {
                 password,
                 CommissionDoneAmount,
                 confirmPassword, FSSAINumber,
-                contactNumber
+                contactNumber,
+                ShopAddress
             });
 
             // Save new dealer

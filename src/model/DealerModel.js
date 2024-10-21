@@ -20,8 +20,9 @@ const generateUniqueShopId = async () => {
 };
 
 const dealerSchema = new mongoose.Schema({
-    shopId: { type: String,  },
+    shopId: { type: String, }, 
     shopName: { type: String, },
+    ShopAddress: { type: String, },
     CommissionDoneAmount: { type: String, },
     contactPerson: { type: String,  },
     email: { type: String,  unique: true },
