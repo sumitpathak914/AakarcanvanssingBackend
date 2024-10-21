@@ -287,7 +287,7 @@ const FactoryController = {
 
     UpdateDealer: async (req, res) => {
         const { shopId } = req.params; // Get shopId from request parameters
-        const { shopName, contactPerson, email, gstNumber, FSSAINumber, contactNumber, password, isAllowLogin } = req.body;
+        const { shopName, contactPerson, email, gstNumber, FSSAINumber, contactNumber, password, isAllowLogin, ShopAddress } = req.body;
 
         // Validate the shopId input
         if (!shopId) {
@@ -313,6 +313,8 @@ const FactoryController = {
 
             // Update only the fields provided in the request
             if (shopName) dealer.shopName = shopName;
+            
+            if (ShopAddress) dealer.ShopAddress = ShopAddress;
             if (contactPerson) dealer.contactPerson = contactPerson;
             if (email) dealer.email = email;
             if (gstNumber) dealer.gstNumber = gstNumber;
