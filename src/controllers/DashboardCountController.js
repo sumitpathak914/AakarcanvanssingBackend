@@ -105,3 +105,87 @@ exports.getCounts = async (req, res) => {
         });
     }
 };
+
+exports.getProductCountsByFactory = async (req, res) => {
+    try {
+        // Get the factory ID from the request parameters
+        const { factoryId } = req.params;
+
+        if (!factoryId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Factory ID is required'
+            });
+        }
+
+        // Get all orders that contain products from the specified factory
+        const orders = await Order.find({
+            'ProductDetails.SupplierInfo.FactoryId': factoryId // Match factory ID in SupplierInfo
+        }, 'ProductDetails');
+
+        // Initialize counts for products based on their dispatch statuses
+        let totalProductCount = 0;
+        let pendingDispatchCount = 0;
+        let deliveredCount = 0;
+        let shippedCount = 0;
+
+        // Loop through all orders and filter products by dispatch status
+        orders.forEach(order => {
+            order.ProductDetails.forEach(product => {
+                if (product.SupplierInfo?.FactoryId === factoryId) {
+                    totalProductCount++; // Count every product from the factory
+
+                    // Check dispatch statuses
+                    const dispatchStatus = product.dispatchShippingDetails?.DispatchStatus;
+                    if (dispatchStatus === 'pending') pendingDispatchCount++;
+                    if (dispatchStatus === 'Completed') deliveredCount++;
+                    if (dispatchStatus === 'Dispatched') shippedCount++;
+                }
+            });
+        });
+
+        // Get all purchase returns related to this factory
+        const purchaseReturns = await PurchaseReturn.find({
+            'SupplierInfo.FactoryId': factoryId // Match factory ID in top-level supplier info
+        });
+
+        // Initialize return counts
+        let pendingReturnCount = 0;
+        let refundCount = 0;
+        let rejectedReturnCount = 0;
+
+        // Loop through purchase returns and check return statuses
+        purchaseReturns.forEach(purchaseReturn => {
+            purchaseReturn.productDetails.forEach(product => {
+                // Check return statuses based on product details
+                if (product.returnStatus === 'Pending') pendingReturnCount++;
+                if (product.returnStatus === 'Refund') refundCount++;
+                if (product.returnStatus === 'Rejected') rejectedReturnCount++;
+            });
+        });
+
+        // Now, your pendingReturnCount, refundCount, and rejectedReturnCount are updated based on statuses
+
+
+        // Return the counts based on the factory ID
+        return res.status(200).json({
+            success: true,
+            data: {
+                factoryId,
+                // totalProductCount,        
+                pendingDispatchCount,    
+                deliveredCount,         
+                shippedCount,             
+                //pendingReturnCount,      
+                refundCount,              
+                //rejectedReturnCount      
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve product counts for the factory',
+            error: error.message
+        });
+    }
+};
