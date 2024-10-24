@@ -102,7 +102,7 @@ exports.getAllBanners = (req, res) => {
         .then(banners => {
             const bannersWithImageUrl = banners.map(banner => ({
                 ...banner.toObject(),
-                image: `http://localhost:5000/uploads/${path.basename(banner.image)}`,
+                image: `https://admin.aakarcanvassing.com/uploads/${path.basename(banner.image)}`,
             }));
             res.json(bannersWithImageUrl);
         })
