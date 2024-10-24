@@ -50,23 +50,24 @@ exports.addBanner = (req, res) => {
             return res.status(400).json({ error: 'Please provide both text and image.' });
         }
 
-        const imagePath = req.file.path; // Path to the uploaded image
+        // Only store the filename in the database
+        const imageName = req.file.filename; // This gives the filename like '1729703470561-239085280.png'
 
         // Check for existing banner
         Banner.findOne()
             .then(existingBanner => {
                 if (existingBanner) {
                     // Delete old image
-                    fs.unlinkSync(existingBanner.image);
+                    fs.unlinkSync(path.join(__dirname, '../uploads', path.basename(existingBanner.image))); // Use the correct path
                     return Banner.deleteOne({ _id: existingBanner._id });
                 }
                 return Promise.resolve();
             })
             .then(() => {
-                // Create new banner
+                // Create new banner and save only the filename
                 const newBanner = new Banner({
                     text,
-                    image: imagePath,
+                    image: imageName, // Save only the image filename
                     isActive: false
                 });
 
@@ -88,12 +89,21 @@ exports.deleteBanner = (req, res) => {
                 return res.status(404).json({ error: 'Banner not found' });
             }
 
-            // Delete the image file from disk
-            fs.unlinkSync(deletedBanner.image);
+            // Construct the full path to the image file
+            const imagePath = path.join(__dirname, '../uploads', deletedBanner.image);
+
+            // Check if the file exists before trying to delete it
+            if (fs.existsSync(imagePath)) {
+                fs.unlinkSync(imagePath); // Delete the image file from disk
+            } else {
+                console.warn(`Image file not found: ${imagePath}`);
+            }
+
             res.json({ message: 'Banner deleted successfully' });
         })
         .catch(err => res.status(500).json({ error: 'Failed to delete banner', details: err }));
 };
+
 
 
 // Get all banners
@@ -102,7 +112,8 @@ exports.getAllBanners = (req, res) => {
         .then(banners => {
             const bannersWithImageUrl = banners.map(banner => ({
                 ...banner.toObject(),
-                image: `https://admin.aakarcanvassing.com/uploads/${path.basename(banner.image)}`,
+                // Correctly format the image URL using the stored filename
+                image: `https://admin.aakarcanvassing.com/uploads/${banner.image}`, // banner.image contains the filename
             }));
             res.json(bannersWithImageUrl);
         })
