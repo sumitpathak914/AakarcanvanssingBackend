@@ -78,7 +78,7 @@ const productController = {
         try {
             // Fetch the products that are visible
             // const productsList = await Product.find({ isVisible: true });
-            // const productsList = await Product.find({ isVisible: true }).select('-wishlist');
+             const productsList = await Product.find({ isVisible: true }).select('-wishlist');
 
             // Use Promise.all to fetch review counts and average ratings for all products
             const productsWithReviews = await Promise.all(productsList.map(async (product) => {
@@ -192,8 +192,8 @@ const productController = {
     getProductByIdForEcommerce: async (req, res) => {
         try {
             const productId = req.body.productId;
-            const product = await Product.findById(productId);
-
+            // const product = await Product.findById(productId);
+            const product = await Product.findById(productId).select('-wishlist');
             if (!product) {
                 return res.status(404).json({ message: 'Product not found' });
             }
