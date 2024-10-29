@@ -116,7 +116,7 @@ const productController = {
             const { shopId } = req.query; // Get the shopId from the query parameters
 
             // Fetch the products that are visible
-            const productsList = await Product.find({ isVisible: true });
+            const productsList = await Product.find({ isVisible: true }).select('-wishlist');
 
             // Use Promise.all to fetch review counts, average ratings, and wishlist status for all products
             const productsWithReviews = await Promise.all(productsList.map(async (product) => {
