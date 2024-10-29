@@ -32,6 +32,8 @@ router.post('/updateVisibility', authenticateToken, productController.updateVisi
 router.post('/updatePrice', authenticateToken, productController.updatePrice);
 router.get('/FactoryProductList/:factoryId', authenticateToken, productController.getProductsByFactoryId);
 router.post('/ProductDetailsForOrder', productController.getProductsByIdsForViewOrders);
+router.get('/getEcommerceProductsShop', productController.getAllProductsForEcommerce);
+
 router.post('/WishlistAdd', productController.addToFavorite);
 router.delete('/remove-from-favorite', productController.removeFromFavorites);
 router.get('/wishlist/:shopId', productController.getWishlistProducts);
