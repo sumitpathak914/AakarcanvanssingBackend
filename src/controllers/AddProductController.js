@@ -78,7 +78,7 @@ const productController = {
         try {
             // Fetch the products that are visible
             // const productsList = await Product.find({ isVisible: true });
-            const productsList = await Product.find({isVisible: true }).select('-wishlist');
+            // const productsList = await Product.find({ isVisible: true }).select('-wishlist');
 
             // Use Promise.all to fetch review counts and average ratings for all products
             const productsWithReviews = await Promise.all(productsList.map(async (product) => {
@@ -116,7 +116,7 @@ const productController = {
             const { shopId } = req.query; // Get the shopId from the query parameters
 
             // Fetch the products that are visible
-            const productsList = await Product.find({ isVisible: true }).select('-wishlist');
+            const productsList = await Product.find({ isVisible: true });
 
             // Use Promise.all to fetch review counts, average ratings, and wishlist status for all products
             const productsWithReviews = await Promise.all(productsList.map(async (product) => {
@@ -132,7 +132,7 @@ const productController = {
                     : 0; // Default to 0 if no reviews
 
                 // Check if the shopId is in the product's wishlist array
-                const isWishlisted = product.wishlist.includes(shopId);
+                const isWishlisted = Array.isArray(product.wishlist) && product.wishlist.includes(shopId);
 
                 // Return a new product object with the review count, average rating, and wishlist status
                 return {
@@ -150,8 +150,10 @@ const productController = {
             });
         } catch (err) {
             res.status(500).json({ result: false, statusCode: 500, message: err.message });
+            console.log(err)
         }
     },
+
 
     // Get a single product by ID
     getProductById: async (req, res) => {
@@ -324,28 +326,28 @@ const productController = {
         console.log('Product ID:', productId, 'Shop ID:', shopId);  // Log both IDs for debugging
 
         try {
-            
+
             if (!productId || !shopId) {
                 return res.status(400).json({ message: 'Product ID and Shop ID are required' });
             }
 
-           
+
             const product = await Product.findById(productId);
 
-            
+
             if (!product) {
                 return res.status(404).json({ message: 'Product not found' });
             }
 
-            
+
             if (!product.wishlist.includes(shopId)) {
-                product.wishlist.push(shopId);  
-                await product.save();  
+                product.wishlist.push(shopId);
+                await product.save();
             } else {
-                return res.status(409).json({ message: 'Shop is already in favorites' });   
+                return res.status(409).json({ message: 'Shop is already in favorites' });
             }
 
-           
+
             res.status(200).json({ message: 'Product added to favorites', product });
         } catch (error) {
             console.error('Error adding to favorites:', error);  // Log the error for debugging
@@ -387,7 +389,7 @@ const productController = {
     },
     getWishlistProducts: async (req, res) => {
         const { shopId } = req.params;  // Extract shopId from route parameters
-         // Log the shop ID for debugging
+        // Log the shop ID for debugging
 
         try {
             // Validate the shopId
@@ -403,7 +405,7 @@ const productController = {
                 return res.status(404).json({ statusCode: 404, result: false, message: 'No products found in wishlist for this shop' });
             }
             // Return the found products
-            res.status(200).json({statusCode:200 ,result:true, wishlistProduct:products });
+            res.status(200).json({ statusCode: 200, result: true, wishlistProduct: products });
         } catch (error) {
             console.error('Error retrieving wishlist products:', error);  // Log the error for debugging
             res.status(500).json({ statusCode: 500, result: false, error: 'An error occurred while retrieving wishlist products' });
