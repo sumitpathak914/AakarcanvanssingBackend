@@ -6,9 +6,9 @@ exports.addTestimonial = async (req, res) => {
     try {
         const testimonial = new Testimonial(req.body);
         await testimonial.save();
-        res.status(201).json(testimonial);
+        res.status(201).json({statusCode:201,result:true, testimonial:testimonial });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ statusCode: 400, result: true, message: error.message });
     }
 };
 
@@ -16,9 +16,9 @@ exports.addTestimonial = async (req, res) => {
 exports.getTestimonials = async (req, res) => {
     try {
         const testimonials = await Testimonial.find();
-        res.status(200).json(testimonials);
+        res.status(200).json({ statusCode: 200, result: true, testimonial: testimonials });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ statusCode: 500, result: true, message: error.message });
     }
 };
 

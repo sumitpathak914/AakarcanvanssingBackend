@@ -10,7 +10,7 @@ const commissionSchema = new Schema({
     dealer70Kg: { type: Number, default: 0 },
     supplier70Kg: { type: Number, default: 0 }
 });
-// Define Product Schema
+
 const productSchema = new Schema({
     productName: { type: String, required: true },
     productDescription: { type: String, default: '' },
@@ -28,11 +28,12 @@ const productSchema = new Schema({
     effectiveDate: { type: Date, default: null },
     expiryDate: { type: Date, default: null },
     qualityVariety: { type: String, default: '' },
-    isVisible: { type: Boolean, default: '' },
+    isVisible: { type: Boolean, default: false },
     action: { type: String, default: '' },
     selectedImages: [{ type: String }],  // Assuming these are URLs or paths to images
     Commission: commissionSchema,
-    DealWeek: { type:Boolean, default: false },
+    DealWeek: { type: Boolean, default: false },
+    wishlist: [{ type: String }],
 });
 
 // Create a model based on the schema
