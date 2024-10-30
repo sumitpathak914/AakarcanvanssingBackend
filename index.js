@@ -114,6 +114,7 @@ const Testimonialsrouter = require('./src/routes/TestimonalsRoute');
 const TermsAndConditionrouter = require('./src/routes/TermsAndConditionRoute');
 const Contactrouter = require('./src/routes/ContactRoute');
 const countRouter = require('./src/routes/CountRoute');
+const Cartrouter = require('./src/routes/AddtocartRoute');
 
 
 const app = express();
@@ -147,6 +148,7 @@ app.use('/', Testimonialsrouter);
 app.use('/', TermsAndConditionrouter);
 app.use('/', Contactrouter);
 app.use('/DashboardCount', countRouter);
+app.use('/cart', Cartrouter);
 app.get('/clear-cache', (req, res) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     res.set('Pragma', 'no-cache');
