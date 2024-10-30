@@ -41,6 +41,39 @@ const addToCart = async (req, res) => {
         res.status(500).json({ result: false, statusCode: 500, message: 'Error adding product to cart', error });
     }
 };
+// const getCartItems = async (req, res) => {
+//     try {
+//         const { ShopId } = req.params;
+
+//         // Find all items in the cart for this specific shop
+//         const cartItems = await Cart.find({ ShopId });
+
+//         if (!cartItems.length) {
+//             return res.status(404).json({ result: false, statusCode: 404, message: 'No items found in cart for this shop.' });
+//         }
+
+//         // Retrieve product details for each item in the cart
+//         const cartWithProductDetails = await Promise.all(
+//             cartItems.map(async (item) => {
+//                 const productDetails = await Product.findById(item.ProductId).lean();
+
+//                 // Remove the 'wishlist' property from productDetails
+//                 if (productDetails && productDetails.wishlist) {
+//                     delete productDetails.wishlist;
+//                 }
+
+//                 return {
+//                     ...item.toObject(), // Convert item to plain object
+//                     productDetails, // Add product details without 'wishlist'
+//                 };
+//             })
+//         );
+
+//         res.status(200).json({ result: true, statusCode: 200, message: 'Cart items retrieved successfully', cartItems: cartWithProductDetails });
+//     } catch (error) {
+//         res.status(500).json({ result: false, statusCode: 500, message: 'Error retrieving cart items', error });
+//     }
+// };
 const getCartItems = async (req, res) => {
     try {
         const { ShopId } = req.params;
@@ -52,6 +85,9 @@ const getCartItems = async (req, res) => {
             return res.status(404).json({ result: false, statusCode: 404, message: 'No items found in cart for this shop.' });
         }
 
+        // Calculate subtotal for all items in the cart
+        let subtotal = 0;
+
         // Retrieve product details for each item in the cart
         const cartWithProductDetails = await Promise.all(
             cartItems.map(async (item) => {
@@ -62,6 +98,9 @@ const getCartItems = async (req, res) => {
                     delete productDetails.wishlist;
                 }
 
+                // Add item’s total price to subtotal
+                subtotal += item.TotalPrice;
+
                 return {
                     ...item.toObject(), // Convert item to plain object
                     productDetails, // Add product details without 'wishlist'
@@ -69,11 +108,18 @@ const getCartItems = async (req, res) => {
             })
         );
 
-        res.status(200).json({ result: true, statusCode: 200, message: 'Cart items retrieved successfully', cartItems: cartWithProductDetails });
+        res.status(200).json({
+            result: true,
+            statusCode: 200,
+            message: 'Cart items retrieved successfully',
+            cartItems: cartWithProductDetails,
+            subtotal
+        });
     } catch (error) {
         res.status(500).json({ result: false, statusCode: 500, message: 'Error retrieving cart items', error });
     }
 };
+
 const deleteCartItem = async (req, res) => {
     try {
         const { ShopId, ProductId } = req.params;
