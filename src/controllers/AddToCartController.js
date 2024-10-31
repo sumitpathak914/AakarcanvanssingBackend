@@ -82,7 +82,7 @@ const getCartItems = async (req, res) => {
         const cartItems = await Cart.find({ ShopId });
 
         if (!cartItems.length) {
-            return res.status(404).json({ result: false, statusCode: 404, message: 'No items found in cart for this shop.' });
+            return res.status(404).json({ result: false, statusCode: 404, message: 'No items found in cart for this shop.', cartItems:[] });
         }
 
         // Calculate subtotal for all items in the cart
