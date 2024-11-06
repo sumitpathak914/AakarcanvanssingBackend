@@ -14,7 +14,7 @@ const addToCart = async (req, res) => {
         // Check if the product is already in the cart for this shop
         const existingCartItem = await Cart.findOne({ ProductId, ShopId });
         if (existingCartItem) {
-            return res.status(400).json({ result: false, statusCode: 400, message: 'Product already in cart' });
+            return res.status(400).json({ result: false, statusCode: 404, message: 'Product already in cart' });
         }
 
         // Calculate total price based on quantity, bag size, and price per kilogram
