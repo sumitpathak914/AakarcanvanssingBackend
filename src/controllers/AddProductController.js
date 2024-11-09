@@ -402,7 +402,7 @@ const productController = {
 
             // Check if any products were found
             if (products.length === 0) {
-                return res.status(404).json({ statusCode: 404, result: false, message: 'No products found in wishlist for this shop' });
+                return res.status(404).json({ statusCode: 404, result: false, wishlistProduct:[], message: 'No products found in wishlist for this shop' });
             }
             // Return the found products
             res.status(200).json({ statusCode: 200, result: true, wishlistProduct: products });
