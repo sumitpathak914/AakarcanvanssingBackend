@@ -4,11 +4,11 @@ const Product = require('../model/AddProductModel'); // Assuming you need produc
 // Add to Cart
 const addToCart = async (req, res) => {
     try {
-        const { ProductId, BagSizeAndQty, ShopId, price } = req.body;
+        const { ProductId, selection, ShopId, price } = req.body;
 
         // Validate input
-        if (!ProductId || !BagSizeAndQty || !ShopId || !price) {
-            return res.status(400).json({ result: false, statusCode: 400, message: 'ProductId, BagSizeAndQty, ShopId, and price are required.' });
+        if (!ProductId || !selection || !ShopId || !price) {
+            return res.status(400).json({ result: false, statusCode: 400, message: 'ProductId, selection, ShopId, and price are required.' });
         }
 
         // Check if the product is already in the cart for this shop
@@ -20,7 +20,7 @@ const addToCart = async (req, res) => {
         // Calculate total price based on quantity, bag size, and price per kilogram
         let totalPrice = 0;
 
-        BagSizeAndQty.forEach(item => {
+        selection.forEach(item => {
             const sizeInKg = parseInt(item.size); // Convert size to a number (e.g., "30kg" to 30)
             totalPrice += sizeInKg * price * item.QTY;
         });
@@ -28,7 +28,7 @@ const addToCart = async (req, res) => {
         // Create the cart object
         const cartItem = new Cart({
             ProductId,
-            BagSizeAndQty,
+            selection,
             ShopId,
             TotalPrice: totalPrice
         });
@@ -36,7 +36,7 @@ const addToCart = async (req, res) => {
         // Save to database
         await cartItem.save();
 
-        res.status(201).json({result:true,statusCode:201, message: 'Product added to cart successfully', cartItem });
+        res.status(201).json({ result: true, statusCode: 201, message: 'Product added to cart successfully', cartItem });
     } catch (error) {
         res.status(500).json({ result: false, statusCode: 500, message: 'Error adding product to cart', error });
     }
@@ -82,7 +82,7 @@ const getCartItems = async (req, res) => {
         const cartItems = await Cart.find({ ShopId });
 
         if (!cartItems.length) {
-            return res.status(404).json({ result: false, statusCode: 404, message: 'No items found in cart for this shop.', cartItems:[] });
+            return res.status(404).json({ result: false, statusCode: 404, message: 'No items found in cart for this shop.', cartItems: [] });
         }
 
         // Calculate subtotal for all items in the cart
@@ -131,7 +131,7 @@ const deleteCartItem = async (req, res) => {
             return res.status(404).json({ message: 'Cart item not found for this shop and product.' });
         }
 
-        res.status(200).json({ result: true, statusCode: 200, message: `Cart item deleted successfully`,});
+        res.status(200).json({ result: true, statusCode: 200, message: `Cart item deleted successfully`, });
     } catch (error) {
         res.status(500).json({ result: true, statusCode: 500, message: 'Error deleting cart item', error });
     }

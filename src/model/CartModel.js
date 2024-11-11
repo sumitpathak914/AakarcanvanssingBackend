@@ -6,7 +6,7 @@ const cartSchema = new mongoose.Schema({
         ref: 'Product', // Assuming there's a Product collection
         required: true
     },
-    BagSizeAndQty: [
+    selection: [
         {
             size: {
                 type: String,
@@ -19,7 +19,7 @@ const cartSchema = new mongoose.Schema({
             }
         }
     ],
-    ShopId: {type: String,},
+    ShopId: { type: String, },
     TotalPrice: {
         type: Number,
         required: true
