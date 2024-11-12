@@ -108,15 +108,16 @@ const UpdateStatusofReturnProduct = async (req, res) => {
             return res.status(404).json({
                 statusCode:404,
                 success: false,
-                message: 'No Return orders found with this Order ID',
+                message: 'No  orders found with this Order ID',
             });
         }
 
         // Check if order details exist
         if (!ordersDetail.length) {
             return res.status(404).json({
+                statusCode: 404,
                 success: false,
-                message: 'No order details found with this Order ID',
+                message: 'No Return order details found with this Order ID',
             });
         }
 
