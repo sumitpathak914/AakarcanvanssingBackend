@@ -226,6 +226,7 @@ const GetTheStatusOfReturnProduct = async (req, res) => {
         if (!orders || orders.length === 0) {
             console.log("No orders found for OrderId:", OrderId);
             return res.status(404).json({
+                statusCode: 404,
                 success: false,
                 message: 'No orders found with this Order ID',
             });
