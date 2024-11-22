@@ -22,7 +22,7 @@ app.use(express.urlencoded({ limit: '100mb', extended: true }));
 // Define routes with multer middleware
 router.post('/addProducts', upload.array('selectedImages', 3), productController.createProduct); // Assuming 'selectedImages' is the field name for file upload
 
-router.get('/GetProducts', authenticateToken, productController.getAllProducts);
+router.get('/GetProducts', productController.getAllProducts);
 router.get('/getEcommerceProducts', productController.getAllProductsForEcommerceNew);
 router.post('/GetSingleproducts', authenticateToken, productController.getProductById);
 router.post('/GetSingleproductsForEcommerce', productController.getProductByIdForEcommerce);
