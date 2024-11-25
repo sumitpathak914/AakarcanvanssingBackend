@@ -24,12 +24,12 @@ router.post('/addProducts', upload.array('selectedImages', 3), productController
 
 router.get('/GetProducts', productController.getAllProducts);
 router.get('/getEcommerceProducts', productController.getAllProductsForEcommerceNew);
-router.post('/GetSingleproducts', authenticateToken, productController.getProductById);
+router.post('/GetSingleproducts', productController.getProductById);
 router.post('/GetSingleproductsForEcommerce', productController.getProductByIdForEcommerce);
-router.put('/updateProduct/:id', authenticateToken, productController.updateProductById);
-router.delete('/products/:id', authenticateToken, productController.deleteProductById);
-router.post('/updateVisibility', authenticateToken, productController.updateVisibility);
-router.post('/updatePrice', authenticateToken, productController.updatePrice);
+router.put('/updateProduct/:id', productController.updateProductById);
+router.delete('/products/:id', productController.deleteProductById);
+router.post('/updateVisibility', productController.updateVisibility);
+router.post('/updatePrice', productController.updatePrice);
 router.get('/FactoryProductList/:factoryId', authenticateToken, productController.getProductsByFactoryId);
 router.post('/ProductDetailsForOrder', productController.getProductsByIdsForViewOrders);
 router.get('/getEcommerceProductsShop', productController.getAllProductsForEcommerce);
