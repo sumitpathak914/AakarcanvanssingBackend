@@ -9,8 +9,8 @@ app.use(express.urlencoded({ limit: '200mb', extended: true }));
 // Define routes with multer middleware
 
 OrderRouter.post('/CreateOrder', OrderManagmentController.CreateOrder);
-OrderRouter.get('/GetAllOrderDetails', authenticateToken, OrderManagmentController.GetAllOrdersDetails);
-OrderRouter.post('/GetOrderDetails', authenticateToken, OrderManagmentController.GetOrderDetails);
+OrderRouter.get('/GetAllOrderDetails', OrderManagmentController.GetAllOrdersDetails);
+OrderRouter.post('/GetOrderDetails', OrderManagmentController.GetOrderDetails);
 OrderRouter.post('/UpdateStatus', authenticateToken, OrderManagmentController.UpdateTheOrderStatus);
 OrderRouter.get('/GetDispatchList', authenticateToken, OrderManagmentController.getDispatchingOrders);
 OrderRouter.get('/dispatch-orders/:factoryId', OrderManagmentController.getDispatchingOrdersByFactory);
