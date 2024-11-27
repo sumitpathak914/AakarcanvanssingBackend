@@ -6,7 +6,7 @@ const authenticateToken = require('../middleware/auth');
 Commissionrouter.post('/CreateCommission-slab', createCommissionSlab);
 Commissionrouter.get('/GetCommission-slabForCommissionSlab', getCommissionSlabs);
 Commissionrouter.get('/GetCommission-slab', getCommissionSlabsForAddProduct);
-Commissionrouter.delete('/DeleteCommission-slab/:id', authenticateToken, deleteCommissionSlab);
-Commissionrouter.patch('/UpdateCommission-slab/:id', authenticateToken, updateCommissionSlab);
+Commissionrouter.delete('/DeleteCommission-slab/:id', deleteCommissionSlab);
+Commissionrouter.patch('/UpdateCommission-slab/:id', updateCommissionSlab);
 
 module.exports = Commissionrouter;
