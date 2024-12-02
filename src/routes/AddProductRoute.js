@@ -30,7 +30,7 @@ router.put('/updateProduct/:id', productController.updateProductById);
 router.delete('/products/:id', productController.deleteProductById);
 router.post('/updateVisibility', productController.updateVisibility);
 router.post('/updatePrice', productController.updatePrice);
-router.get('/FactoryProductList/:factoryId', authenticateToken, productController.getProductsByFactoryId);
+router.get('/FactoryProductList/:factoryId', productController.getProductsByFactoryId);
 router.post('/ProductDetailsForOrder', productController.getProductsByIdsForViewOrders);
 router.get('/getEcommerceProductsShop', productController.getAllProductsForEcommerce);
 
