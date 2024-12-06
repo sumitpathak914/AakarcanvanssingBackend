@@ -21,6 +21,13 @@ loginController.loginUser = async (req, res) => {
         if (user.password !== password) {
             return res.status(404).json({ result: false, statuscode: 404, message: "Invalid credentials" });
         }
+        if (user.role === "Factory" && !user.isAllowLogin) {
+            return res.status(404).json({
+                result: false,
+                statuscode: 404,
+                message: "Login Not Allowed. Please Contact Admin."
+            });
+        }
 
         const payload = {
             user: {

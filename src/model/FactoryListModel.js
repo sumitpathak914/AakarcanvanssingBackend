@@ -17,6 +17,7 @@ const factorySchema = new mongoose.Schema({
     GSTNumber:String,
     postalCode: String,
     country: String,
+    isAllowLogin: { type: Boolean, default: false },
     products: [{
         category: String,
         brandName: String,

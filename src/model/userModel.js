@@ -20,7 +20,7 @@ const UserSchema = new Schema({
         default: 'Factory'
     },
     factoryId: { type: String, unique: true },
-    CommissionDoneAmount: { type: String,},
+    CommissionDoneAmount: { type: String, },
     factoryName: { type: String, },
     contactPerson: { type: String, },
     contactNo: { type: String, },
@@ -33,6 +33,7 @@ const UserSchema = new Schema({
     State: { type: String, },
     FASSAINumber: { type: String },
     GSTNumber: { type: String },
+    isAllowLogin: { type: Boolean, default: false },
     products: [
         {
             brandName: { type: String, },

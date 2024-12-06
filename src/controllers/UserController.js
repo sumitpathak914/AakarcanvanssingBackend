@@ -113,6 +113,33 @@ const userController = {
             res.status(500).json({ result: false, statusCode: 500, error: 'Failed to update factory data.' });
         }
     },
+    UpdateIsAllowLogin: async (req, res) => {
+        const { factoryId, isAllowLogin } = req.body;
+
+        // Validate the factoryId input
+        if (!factoryId) {
+            return res.status(400).json({ result: false, statusCode: 400, message: 'Shop ID is required' });
+        }
+
+        try {
+            // Find the dealer by factoryId
+            const factory = await User.findOne({ factoryId: factoryId });
+
+            // Check if dealer exists
+            if (!factory) {
+                return res.status(404).json({ result: false, statusCode: 404, message: 'factory not found' });
+            }
+
+            // Update isAllowLogin with the provided value
+            factory.isAllowLogin = isAllowLogin;
+            await factory.save();
+
+            res.status(200).json({ result: true, statusCode: 200, message: `Login access ${isAllowLogin ? 'granted' : 'revoked'} successfully`, data: factory });
+        } catch (error) {
+            console.error('Error updating isAllowLogin:', error); // Log the error
+            res.status(500).json({ result: false, statusCode: 500, message: 'Internal Server Error' });
+        }
+    },
 };
 
 module.exports = userController;
