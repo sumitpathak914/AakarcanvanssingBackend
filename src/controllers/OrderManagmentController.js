@@ -794,7 +794,7 @@ const orderController = {
     </head>
     <body>
      <div class="headernew">
-                             <img src="http://localhost:5000/asset/AdminLogo.png" alt="Company Logo">
+                             <img src="https://admin.aakarcanvassing.com/asset/AdminLogo.png" alt="Company Logo">
 
                                
                             </div>
