@@ -1,9 +1,10 @@
 const Order = require('../model/OrderManagmentandDispatchModel');
 const TransactionRecord = require('../model/TrasactionsRecords');
 const nodemailer = require('nodemailer');
-const PDFDocument = require('pdfkit');
+
 const path = require('path');
-const pdf = require('html-pdf');
+const puppeteer = require('puppeteer');
+const fs = require('fs');
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com', // Use 'smtp.gmail.com' explicitly for Gmail
     port: 587, // Use 465 if 'secure: true'
@@ -764,6 +765,7 @@ const orderController = {
             .products-section {
                 margin-bottom: 20px;
             }
+                
             .products-table {
                 width: 100%;
                 border-collapse: collapse;
@@ -846,22 +848,22 @@ const orderController = {
                 </thead>
                <tbody>
     ${order.ProductDetails.map((product, index) => {
-        // Group by size and sum quantities
-        const sizeQuantityMap = product.selection.reduce((map, selection) => {
-            if (map[selection.size]) {
-                map[selection.size] += selection.quantity;
-            } else {
-                map[selection.size] = selection.quantity;
-            }
-            return map;
-        }, {});
+                // Group by size and sum quantities
+                const sizeQuantityMap = product.selection.reduce((map, selection) => {
+                    if (map[selection.size]) {
+                        map[selection.size] += selection.quantity;
+                    } else {
+                        map[selection.size] = selection.quantity;
+                    }
+                    return map;
+                }, {});
 
-        // Create a string showing the size and total quantity
-        const sizeQuantityString = Object.entries(sizeQuantityMap)
-            .map(([size, quantity]) => `${size} - ${quantity}`)
-            .join(', ');
+                // Create a string showing the size and total quantity
+                const sizeQuantityString = Object.entries(sizeQuantityMap)
+                    .map(([size, quantity]) => `${size} - ${quantity}`)
+                    .join(', ');
 
-        return `
+                return `
             <tr>
                 <td>${index + 1}</td>
                 <td>${product.ProductName || 'N/A'}</td>
@@ -872,7 +874,7 @@ const orderController = {
                 <td>${product.productTotalAmount || 'N/A'}</td>
             </tr>
         `;
-    }).join('')}
+            }).join('')}
 </tbody>
 
             </table>
@@ -890,18 +892,38 @@ const orderController = {
 
 
 
-            // Convert HTML content to PDF
-            const options = { format: 'A4', orientation: 'portrait', border: '20mm' };
-            pdf.create(htmlContent, options).toStream((err, stream) => {
-                if (err) {
-                    console.error('Error generating PDF:', err);
-                    return res.status(500).json({ message: 'Internal Server Error' });
-                }
+            const browser = await puppeteer.launch({
+                args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            });
+            const page = await browser.newPage();
 
-                // Set response headers for PDF download
-                res.setHeader('Content-Type', 'application/pdf');
-                res.setHeader('Content-Disposition', `inline; filename=order_${orderId}.pdf`);
-                stream.pipe(res);
+            // Set the HTML content
+            await page.setContent(htmlContent);
+
+            // Define the PDF storage path
+            const pdfDir = path.join(__dirname, '../Pdf_Storage');
+            if (!fs.existsSync(pdfDir)) {
+                fs.mkdirSync(pdfDir, { recursive: true });
+            }
+            const pdfPath = path.join(pdfDir, `order_${orderId}.pdf`);
+
+            // Generate the PDF and save it to the directory
+            await page.pdf({
+                path: pdfPath,
+                format: 'A4',
+                printBackground: true,
+            });
+
+            await browser.close();
+
+            // Send the response with the PDF path
+            const baseUrl = `https://admin.aakarcanvassing.com/pdf`;
+            const pdfUrl = `${baseUrl}/order_${orderId}.pdf`;
+
+            // Send response with the URL
+            res.json({
+                message: 'PDF generated successfully',
+                pdfPath: pdfUrl,
             });
         } catch (error) {
             console.error('Error generating PDF:', error);

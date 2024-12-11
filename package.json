@@ -24,6 +24,7 @@
     "nodemailer": "^6.9.14",
     "nodemon": "^3.1.4",
     "pdfkit": "^0.15.0",
+    "puppeteer": "^23.10.3",
     "vercel": "^35.1.0"
   }
 }
