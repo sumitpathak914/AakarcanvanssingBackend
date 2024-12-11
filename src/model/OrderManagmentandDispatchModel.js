@@ -18,7 +18,9 @@ const CommissionSchema = new Schema({
     dealer50Kg: { type: Number, required: true },
     supplier50Kg: { type: Number, required: true },
     dealer70Kg: { type: Number, required: true },
-    supplier70Kg: { type: Number, required: true }
+    supplier70Kg: { type: Number, required: true },
+    dealer100Kg: { type: Number, required: true },
+    supplier100Kg: { type: Number, required: true }
 });
 
 const SelectionSchema = new Schema({

@@ -1,10 +1,13 @@
 const Order = require('../model/OrderManagmentandDispatchModel');
 const TransactionRecord = require('../model/TrasactionsRecords');
 const nodemailer = require('nodemailer');
+const PDFDocument = require('pdfkit');
+const path = require('path');
+const pdf = require('html-pdf');
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    port: 587,
-    secure: false,
+    host: 'smtp.gmail.com', // Use 'smtp.gmail.com' explicitly for Gmail
+    port: 587, // Use 465 if 'secure: true'
+    secure: false, // Use 'true' if port is 465
     auth: {
         user: 'sumitpathakofficial914@gmail.com',
         pass: 'awtiquudehddpias' // Make sure to secure this using environment variables
@@ -704,7 +707,210 @@ const orderController = {
             console.error('Error updating refund status:', error);
             res.status(500).json({ message: 'Server error' });
         }
-    }
+    },
+
+
+
+    generateOrderPDF: async (req, res) => {
+        const { orderId, productId } = req.body;
+
+        try {
+            // Fetch the order details from the database
+            const order = await Order.findOne({ orderId });
+            if (!order) {
+                return res.status(404).json({ message: 'Order not found' });
+            }
+
+            // Create an HTML template for the PDF content
+            // Updated section of the HTML content to style due amount in red and total amount in gray
+            htmlContent = `
+<html>
+    <head>
+        <title>Order Quotation</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 10px; }
+            .header { text-align: center; margin-bottom: 20px; }
+            .details-container {
+                display: flex;
+                justify-content: space-between;
+                gap: 20px;
+                margin-bottom: 20px;
+            }
+               .headernew {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 20px;
+}
+
+.headernew img {
+    width: 150px;
+  
+    margin-left:300px
+}
+
+            .details-section {
+                flex: 1;
+                border: 1px solid #000;
+                padding: 15px;
+                border-radius: 5px;
+                box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+                margin-top: 10px;
+            }
+            .details-section h2 {
+                margin-top: 0;
+            }
+            .products-section {
+                margin-bottom: 20px;
+            }
+            .products-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+            .products-table th, .products-table td {
+                border: 1px solid #000;
+                padding: 8px;
+                text-align: center;
+            }
+            .products-table th {
+                background-color: #f0f0f0;
+            }
+            .footer {
+                text-align: center; 
+                margin-top: 50px; 
+                font-size: 12px; 
+            }
+            .total-amount {
+                color: gray;
+                font-weight: bold;
+            }
+            .due-amount {
+                color: red;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+     <div class="headernew">
+                             <img src="http://localhost:5000/asset/AdminLogo.png" alt="Company Logo">
+
+                               
+                            </div>
+        <div class="header">
+            <h1>Order Summery</h1>
+            <p>Order ID: ${orderId}</p>
+           <p>Order Date: ${order.ProductDetails[0] ? order.ProductDetails[0].OrderDate : 'No order date available'}</p>
+
+        </div>
+        
+       
+        <div class="details-container">
+            <div class="details-section">
+                <h2>Customer Details</h2>
+                <p><strong>Name:</strong> ${order.customerInfo?.CustomerName || 'N/A'}</p>
+                <p><strong>Address:</strong> ${order.customerInfo?.Billing_Address || 'N/A'}</p>
+                <p><strong>Contact:</strong> ${order.customerInfo?.ContactNo || 'N/A'}</p>
+            </div>
+            <div class="details-section">
+                <h2>Factory Details</h2>
+                ${order.ProductDetails.map((product, index) => {
+                return `
+                    <div>
+                        <h3>Product ${index + 1}: ${product.ProductName || 'N/A'}</h3>
+                        <p><strong>Factory ID:</strong> ${product.SupplierInfo?.FactoryId || 'N/A'}</p>
+                        <p><strong>Factory Name:</strong> ${product.SupplierInfo?.FactoryName || 'N/A'}</p>
+                        <p><strong>Factory Address:</strong> ${product.SupplierInfo?.FactoryAddress || 'N/A'}</p>
+                        <p><strong>Factory Contact:</strong> ${product.SupplierInfo?.FactoryContact || 'N/A'}</p>
+                    </div>
+                    `;
+            }).join('')}
+            </div>
+        </div>
+
+        <div class="products-section">
+            <h2>Products Details</h2>
+            <table class="products-table">
+                <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Product Name</th>
+                        <th>Product ID</th>
+                        <th>MRP/Kg</th>
+                        <th>Discount</th>
+                        <th>Bag Size Quantity</th>
+                       
+                        <th>Product Costing</th>
+                    </tr>
+                </thead>
+               <tbody>
+    ${order.ProductDetails.map((product, index) => {
+        // Group by size and sum quantities
+        const sizeQuantityMap = product.selection.reduce((map, selection) => {
+            if (map[selection.size]) {
+                map[selection.size] += selection.quantity;
+            } else {
+                map[selection.size] = selection.quantity;
+            }
+            return map;
+        }, {});
+
+        // Create a string showing the size and total quantity
+        const sizeQuantityString = Object.entries(sizeQuantityMap)
+            .map(([size, quantity]) => `${size} - ${quantity}`)
+            .join(', ');
+
+        return `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${product.ProductName || 'N/A'}</td>
+                <td>${product.ProductID || 'N/A'}</td>
+                <td>${product.MRP || 'N/A'}</td>
+                <td>${product.discount || 'N/A'}</td>
+                <td>${sizeQuantityString || 'N/A'}</td>
+                <td>${product.productTotalAmount || 'N/A'}</td>
+            </tr>
+        `;
+    }).join('')}
+</tbody>
+
+            </table>
+        </div>
+        <div>
+            <p class="total-amount">Order Amount: ${order.Total}</p>
+            <p class="due-amount">Order Due Amount: ${order.Duepayment}</p>
+        </div>
+        <div class="footer">
+            <p>Thank you for your business!</p>
+        </div>
+    </body>
+</html>
+`;
+
+
+
+            // Convert HTML content to PDF
+            const options = { format: 'A4', orientation: 'portrait', border: '20mm' };
+            pdf.create(htmlContent, options).toStream((err, stream) => {
+                if (err) {
+                    console.error('Error generating PDF:', err);
+                    return res.status(500).json({ message: 'Internal Server Error' });
+                }
+
+                // Set response headers for PDF download
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', `inline; filename=order_${orderId}.pdf`);
+                stream.pipe(res);
+            });
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    },
+
+
+
 };
 
 module.exports = orderController;

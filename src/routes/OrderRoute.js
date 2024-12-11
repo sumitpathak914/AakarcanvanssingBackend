@@ -21,4 +21,5 @@ OrderRouter.post('/ChangeRefundOrderStatus', OrderManagmentController.ChangeRetu
 OrderRouter.get('/getOrdersByShopId/:ShopId', OrderManagmentController.getOrdersByShopId);
 OrderRouter.post('/GetOrderDetails_ForPurchase', OrderManagmentController.GetOrderDetailsForReturn);
 OrderRouter.get('/getOrdersByShopIdWithStatus/:ShopId', OrderManagmentController.getOrdersByShopIdWithStatus);
+OrderRouter.post('/Generate_Order_pdf', OrderManagmentController.generateOrderPDF);
 module.exports = OrderRouter;

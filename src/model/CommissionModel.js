@@ -10,6 +10,8 @@ const commissionSlabSchema = new mongoose.Schema({
         supplier50Kg: { type: Number },
         dealer70Kg: { type: Number },
         supplier70Kg: { type: Number },
+        dealer100Kg: { type: Number },
+        supplier100Kg: { type: Number },
     },
     isActive: { type: Boolean, default: true },
 });
