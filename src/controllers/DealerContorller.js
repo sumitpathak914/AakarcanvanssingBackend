@@ -199,8 +199,8 @@ const FactoryController = {
                                 commissionRate = commissionRates.dealer30Kg; // Get the dealer commission for 30kg
                             } else if (size === '50kg') {
                                 commissionRate = commissionRates.dealer50Kg; // Get the dealer commission for 50kg
-                            } else if (size === '70kg') {
-                                commissionRate = commissionRates.dealer70Kg; // Get the dealer commission for 70kg
+                            } else if (size === '25kg') {
+                                commissionRate = commissionRates.dealer25Kg; // Get the dealer commission for 70kg
                             } else if (size === '100kg') {
                                 commissionRate = commissionRates.dealer100Kg; // Get the dealer commission for 70kg
                             }

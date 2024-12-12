@@ -90,8 +90,8 @@ const FactoryController = {
                                 commissionRate = commissionRates.supplier30Kg; // Get the supplier commission for 30kg
                             } else if (size === '50kg') {
                                 commissionRate = commissionRates.supplier50Kg; // Get the supplier commission for 50kg
-                            } else if (size === '70kg') {
-                                commissionRate = commissionRates.supplier70Kg; // Get the supplier commission for 70kg
+                            } else if (size === '25kg') {
+                                commissionRate = commissionRates.supplier25Kg; // Get the supplier commission for 70kg
                             }
                             else if (size === '100kg') {
                                 commissionRate = commissionRates.supplier100Kg; // Get the supplier commission for 70kg
@@ -328,8 +328,8 @@ const FactoryController = {
                                 commissionRate = product.commission.supplier30Kg;
                             } else if (size === '50kg') {
                                 commissionRate = product.commission.supplier50Kg;
-                            } else if (size === '70kg') {
-                                commissionRate = product.commission.supplier70Kg;
+                            } else if (size === '25kg') {
+                                commissionRate = product.commission.supplier25Kg;
                             } else if (size === '100kg') {
                                 commissionRate = product.commission.supplier100Kg;
                             }
@@ -414,8 +414,8 @@ const FactoryController = {
                             commissionRate = commissionRates.supplier30Kg;
                         } else if (size === '50kg') {
                             commissionRate = commissionRates.supplier50Kg;
-                        } else if (size === '70kg') {
-                            commissionRate = commissionRates.supplier70Kg;
+                        } else if (size === '25kg') {
+                            commissionRate = commissionRates.supplier25Kg;
                         } else if (size === '100kg') {
                             commissionRate = commissionRates.supplier100Kg;
                         }

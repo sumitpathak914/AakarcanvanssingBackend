@@ -4,16 +4,16 @@ const pdf = require('html-pdf');
 const Quotation = require('../model/QuatationModel');
 const nodemailer = require('nodemailer');
 
-
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com', // Use 'smtp.gmail.com' explicitly for Gmail
-    port: 465, // Use 465 if 'secure: true'
-    secure: false, // Use 'true' if port is 465
+    host: 'smtp.gmail.com',
+    port: 465, // Use 465 for Gmail with SSL/TLS
+    secure: true, // Set secure to true for port 465
     auth: {
         user: 'sumitpathakofficial914@gmail.com',
-        pass: 'awtiquudehddpias'
+        pass: 'awtiquudehddpias' // Use an app password, not your Gmail password
     }
 });
+
 
 const QuotationController = {
     saveQuotation: async (req, res) => {
