@@ -1,19 +1,19 @@
 const fs = require('fs');
 const path = require('path');
-const puppeteer = require('puppeteer');
+const pdf = require('html-pdf');
 const Quotation = require('../model/QuatationModel');
 const nodemailer = require('nodemailer');
 
+
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465, // Use 465 for Gmail with SSL/TLS
-    secure: true, // Set secure to true for port 465
+    host: 'smtp.gmail.com', // Use 'smtp.gmail.com' explicitly for Gmail
+    port: 465, // Use 465 if 'secure: true'
+    secure: false, // Use 'true' if port is 465
     auth: {
         user: 'sumitpathakofficial914@gmail.com',
-        pass: 'awtiquudehddpias' // Use an app password, not your Gmail password
+        pass: 'awtiquudehddpias'
     }
 });
-
 
 const QuotationController = {
     saveQuotation: async (req, res) => {
@@ -253,18 +253,11 @@ const QuotationController = {
                     </body>
                     </html>
                 `;
+                2222
                 const pdfFilePath = path.join(__dirname, `../quotation-${Date.now()}.pdf`);
-                const browser = await puppeteer.launch({
-                    headless: true, // Make sure headless mode is enabled
-                    args: ['--no-sandbox', '--disable-setuid-sandbox'] // Additional flags to improve compatibility on certain environments
-                });
-                const page = await browser.newPage();
-                await page.setContent(htmlContent);
-                await page.pdf({ path: pdfFilePath, format: 'A4' });
 
-                await browser.close();
-
-              
+                pdf.create(htmlContent, { format: 'Letter' }).toFile(pdfFilePath, function (err, _) {
+                    if (err) throw err;
 
                     // Prepare email content
                     const customerName = ShopInformation.ShopOwnerContactPerson;
@@ -331,7 +324,7 @@ const QuotationController = {
                                 });
                         }
                     });
-             
+                });
             } else {
                 // Save quotation directly
                 const newQuotation = new Quotation(req.body);
