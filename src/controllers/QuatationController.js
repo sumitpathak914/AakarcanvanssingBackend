@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const QuotationController = {
-     saveQuotation : async (req, res) => {
+    saveQuotation: async (req, res) => {
         const { Action, ShopInformation, AddDetails, QuotationDetails, htmlContent, ProductDetails } = req.body;
 
         try {
@@ -242,7 +242,7 @@ const QuotationController = {
                 `;
 
                 // Generate PDF buffer
-                const browser = await puppeteer.launch();
+                const browser = await puppeteer.launch({ headless: true });
                 const page = await browser.newPage();
 
                 await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
@@ -250,16 +250,16 @@ const QuotationController = {
 
                 await browser.close();
 
-                    // Prepare email content
-                    const customerName = ShopInformation.ShopOwnerContactPerson;
-                    const companyName = ShopInformation.ShopName;
-                    const contactInformation = ShopInformation.Contact;
-                    const contactEmail = ShopInformation.EmailID;
-                    const mailOptions = {
-                        from: 'sumitpathakofficial914@gmail.com',
-                        to: contactEmail,
-                        subject: 'Quotation Details',
-                        text: `Dear ${customerName},
+                // Prepare email content
+                const customerName = ShopInformation.ShopOwnerContactPerson;
+                const companyName = ShopInformation.ShopName;
+                const contactInformation = ShopInformation.Contact;
+                const contactEmail = ShopInformation.EmailID;
+                const mailOptions = {
+                    from: 'sumitpathakofficial914@gmail.com',
+                    to: contactEmail,
+                    subject: 'Quotation Details',
+                    text: `Dear ${customerName},
     
     We hope this email finds you well.
 
@@ -286,32 +286,32 @@ const QuotationController = {
    
     Best regards,
     Aakar Canvassing`,
-                        attachments: [
-                            {
-                                filename: `${customerName}-${AddDetails.QuotationID}.pdf`,
-                                content: pdfBuffer,
-                                contentType: 'application/pdf'
-                            }
-                        ]
-                    };
-
-                    transporter.sendMail(mailOptions, function (error, _) {
-                        if (error) {
-                            console.error(error);
-                            return res.status(500).json({ error: error.message });
+                    attachments: [
+                        {
+                            filename: `${customerName}-${AddDetails.QuotationID}.pdf`,
+                            content: pdfBuffer,
+                            contentType: 'application/pdf'
                         }
+                    ]
+                };
 
-                        // Save quotation
-                        const newQuotation = new Quotation(req.body);
-                        newQuotation.save()
-                            .then(() => {
-                                res.status(201).json({ message: 'Quotation saved successfully.' });
-                            })
-                            .catch(error => {
-                                res.status(500).json({ error: error.message });
-                            });
-                    });
-               
+                transporter.sendMail(mailOptions, function (error, _) {
+                    if (error) {
+                        console.error(error);
+                        return res.status(500).json({ error: error.message });
+                    }
+
+                    // Save quotation
+                    const newQuotation = new Quotation(req.body);
+                    newQuotation.save()
+                        .then(() => {
+                            res.status(201).json({ message: 'Quotation saved successfully.' });
+                        })
+                        .catch(error => {
+                            res.status(500).json({ error: error.message });
+                        });
+                });
+
             } else {
                 // Save quotation directly
                 const newQuotation = new Quotation(req.body);
@@ -331,7 +331,7 @@ const QuotationController = {
             res.status(500).json({ error: error.message });
         }
     },
-     getRecordById : async (req, res) => {
+    getRecordById: async (req, res) => {
         try {
             const id = req.params.id; // Get ID from the request parameters
             const record = await Quotation.findById(id); // Fetch the record by ID
@@ -346,7 +346,7 @@ const QuotationController = {
             res.status(500).json({ message: 'Server error' });
         }
     },
-     deleteRecordById : async (req, res) => {
+    deleteRecordById: async (req, res) => {
         try {
             const id = req.params.id; // Get ID from the request parameters
             const deletedRecord = await Quotation.findByIdAndDelete(id); // Delete the record by ID
