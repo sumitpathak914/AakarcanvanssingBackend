@@ -7,8 +7,8 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com', // Use 'smtp.gmail.com' explicitly for Gmail
-    port: 587, // Use 465 if 'secure: true'
-    secure: false, // Use 'true' if port is 465
+    port: 465, // Use 465 if 'secure: true'
+    secure: true, // Use 'true' if port is 465
     auth: {
         user: 'sumitpathakofficial914@gmail.com',
         pass: 'awtiquudehddpias' // Make sure to secure this using environment variables
