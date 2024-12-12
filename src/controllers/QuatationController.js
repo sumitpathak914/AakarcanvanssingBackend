@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const pdf = require('html-pdf');
+const puppeteer = require('puppeteer');
 const Quotation = require('../model/QuatationModel');
 const nodemailer = require('nodemailer');
 
@@ -253,11 +253,15 @@ const QuotationController = {
                     </body>
                     </html>
                 `;
-                2222
                 const pdfFilePath = path.join(__dirname, `../quotation-${Date.now()}.pdf`);
+                const browser = await puppeteer.launch();
+                const page = await browser.newPage();
+                await page.setContent(htmlContent);
+                await page.pdf({ path: pdfFilePath, format: 'A4' });
 
-                pdf.create(htmlContent, { format: 'Letter' }).toFile(pdfFilePath, function (err, _) {
-                    if (err) throw err;
+                await browser.close();
+
+              
 
                     // Prepare email content
                     const customerName = ShopInformation.ShopOwnerContactPerson;
@@ -266,7 +270,7 @@ const QuotationController = {
                     const contactEmail = ShopInformation.EmailID;
 
                     const mailOptions = {
-                        from: 'prempathak914@gmail.com',
+                        from: 'sumitpathakofficial914@gmail.com',
                         to: contactEmail,
                         subject: 'Quotation Details',
                         text: `Dear ${customerName},
@@ -324,7 +328,7 @@ const QuotationController = {
                                 });
                         }
                     });
-                });
+             
             } else {
                 // Save quotation directly
                 const newQuotation = new Quotation(req.body);
