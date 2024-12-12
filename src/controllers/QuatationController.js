@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const pdf = require('html-pdf');
+const puppeteer = require('puppeteer');
 const Quotation = require('../model/QuatationModel');
 const nodemailer = require('nodemailer');
 
@@ -242,11 +242,13 @@ const QuotationController = {
                 `;
 
                 // Generate PDF buffer
-                pdf.create(htmlContent, { format: 'Letter' }).toBuffer(function (err, buffer) {
-                    if (err) {
-                        console.error(err);
-                        return res.status(500).json({ error: 'Failed to generate PDF.' });
-                    }
+                const browser = await puppeteer.launch();
+                const page = await browser.newPage();
+
+                await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+                const pdfBuffer = await page.pdf({ format: 'Letter', printBackground: true });
+
+                await browser.close();
 
                     // Prepare email content
                     const customerName = ShopInformation.ShopOwnerContactPerson;
@@ -287,7 +289,7 @@ const QuotationController = {
                         attachments: [
                             {
                                 filename: `${customerName}-${AddDetails.QuotationID}.pdf`,
-                                content: buffer,
+                                content: pdfBuffer,
                                 contentType: 'application/pdf'
                             }
                         ]
@@ -309,7 +311,7 @@ const QuotationController = {
                                 res.status(500).json({ error: error.message });
                             });
                     });
-                });
+               
             } else {
                 // Save quotation directly
                 const newQuotation = new Quotation(req.body);
