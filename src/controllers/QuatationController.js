@@ -11,14 +11,13 @@ const transporter = nodemailer.createTransport({
     secure: true, // Use 'true' if port is 465
     auth: {
         user: 'sumitpathakofficial914@gmail.com',
-        pass: 'awtiquudehddpias'
+        pass: 'jaqn arbz erem bcwk'
     }
 });
 
 const QuotationController = {
-    saveQuotation: async (req, res) => {
-        const { Action, ShopInformation, AddDetails, QuotationDetails, htmlContent,
-            ProductDetails } = req.body;
+     saveQuotation : async (req, res) => {
+        const { Action, ShopInformation, AddDetails, QuotationDetails, htmlContent, ProductDetails } = req.body;
 
         try {
             if (Action === 1) {
@@ -34,41 +33,29 @@ const QuotationController = {
                         : '';
 
                     return `
-        <tr>
-            <td>${product.productCode} ${product.productName}</td>
-            <td>
-                <ul>
-                    ${selectionItems} <!-- Insert the selection items here -->
-                </ul>
-            </td>
-            <td>
-                ${product.discount ?
-                        `<del>${product.price}/kg</del><br /> ₹ ${discountedPrice}/kg` :
+                    <tr>
+                        <td>${product.productCode} ${product.productName}</td>
+                        <td>
+                            <ul>
+                                ${selectionItems}
+                            </ul>
+                        </td>
+                        <td>
+                            ${product.discount ?
+                            `<del>${product.price}/kg</del><br /> ₹ ${discountedPrice}/kg` :
                             `₹ ${product.price}/kg`
                         }
-            </td>
-            <td>${product.discount || '0'}%</td>
-            <td>₹ ${product.Dis_Amt}</td>
-            <td>₹ ${product.Total.toFixed(2)}</td>
-        </tr>
-    `;
-                }).join('');
-// Join all product rows into a single string
+                        </td>
+                        <td>${product.discount || '0'}%</td>
+                        <td>₹ ${product.Dis_Amt}</td>
+                        <td>₹ ${product.Total.toFixed(2)}</td>
+                    </tr>
+                `;
+                }).join(''); // Join all product rows into a single string
 
-
-                // Calculate total amounts
-                // const subtotal = ProductDetails.selectedProducts.reduce((acc, product) => {
-                //     const discountAmt = product.discount ? (product.price * product.selection[0].quantity * product.discount / 100) : 0;
-                //     return acc + ((product.price * product.selection[0].quantity) - discountAmt);
-                // }, 0);
-
-                const subtotal = ProductDetails.Subtotal + ProductDetails.TotalDiscount
-                const totalDiscount = ProductDetails.TotalDiscount
-
-
-            
+                const subtotal = ProductDetails.Subtotal + ProductDetails.TotalDiscount;
+                const totalDiscount = ProductDetails.TotalDiscount;
                 const grandTotal = subtotal - totalDiscount;
-
 
                 const htmlContent = `
                     <!DOCTYPE html>
@@ -177,7 +164,7 @@ const QuotationController = {
                     <body>
                         <div class="container">
                             <div class="header">
-                             <img src="http://localhost:5000/asset/AdminLogo.png" alt="Company Logo">
+                             <img src="https://admin.aakarcanvassing.com/asset/AdminLogo.png" alt="Company Logo">
 
                                 <div class="details">
                                     <p><strong>Quotation ID:</strong> ${AddDetails.QuotationID}</p>
@@ -253,20 +240,21 @@ const QuotationController = {
                     </body>
                     </html>
                 `;
-                2222
-                const pdfFilePath = path.join(__dirname, `../quotation-${Date.now()}.pdf`);
 
-                pdf.create(htmlContent, { format: 'Letter' }).toFile(pdfFilePath, function (err, _) {
-                    if (err) throw err;
+                // Generate PDF buffer
+                pdf.create(htmlContent, { format: 'Letter' }).toBuffer(function (err, buffer) {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).json({ error: 'Failed to generate PDF.' });
+                    }
 
                     // Prepare email content
                     const customerName = ShopInformation.ShopOwnerContactPerson;
                     const companyName = ShopInformation.ShopName;
                     const contactInformation = ShopInformation.Contact;
                     const contactEmail = ShopInformation.EmailID;
-
                     const mailOptions = {
-                        from: 'prempathak914@gmail.com',
+                        from: 'sumitpathakofficial914@gmail.com',
                         to: contactEmail,
                         subject: 'Quotation Details',
                         text: `Dear ${customerName},
@@ -299,7 +287,7 @@ const QuotationController = {
                         attachments: [
                             {
                                 filename: `${customerName}-${AddDetails.QuotationID}.pdf`,
-                                path: pdfFilePath,
+                                content: buffer,
                                 contentType: 'application/pdf'
                             }
                         ]
@@ -308,21 +296,18 @@ const QuotationController = {
                     transporter.sendMail(mailOptions, function (error, _) {
                         if (error) {
                             console.error(error);
-                            res.status(500).json({ error: error.message });
-                        } else {
-                            // Delete temporary PDF file after sending email
-                            fs.unlinkSync(pdfFilePath);
-
-                            // Save quotation
-                            const newQuotation = new Quotation(req.body);
-                            newQuotation.save()
-                                .then(() => {
-                                    res.status(201).json({ message: 'Quotation saved successfully.' });
-                                })
-                                .catch(error => {
-                                    res.status(500).json({ error: error.message });
-                                });
+                            return res.status(500).json({ error: error.message });
                         }
+
+                        // Save quotation
+                        const newQuotation = new Quotation(req.body);
+                        newQuotation.save()
+                            .then(() => {
+                                res.status(201).json({ message: 'Quotation saved successfully.' });
+                            })
+                            .catch(error => {
+                                res.status(500).json({ error: error.message });
+                            });
                     });
                 });
             } else {
@@ -335,6 +320,7 @@ const QuotationController = {
             res.status(500).json({ error: error.message });
         }
     },
+
     getQuotations: async (req, res) => {
         try {
             const quotations = await Quotation.find();
