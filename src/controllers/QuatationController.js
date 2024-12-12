@@ -1,17 +1,20 @@
 const fs = require('fs');
 const path = require('path');
-const puppeteer = require('puppeteer');
+const pdf = require('html-pdf');
 const Quotation = require('../model/QuatationModel');
 const nodemailer = require('nodemailer');
 
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com', // Use 'smtp.gmail.com' explicitly for Gmail
-    port: 465, // Use 465 if 'secure: true'
-    secure: true, // Use 'true' if port is 465
+    host: 'smtp.gmail.com',
+    port: 587, // Port 587 for STARTTLS
+    secure: false,
     auth: {
         user: 'sumitpathakofficial914@gmail.com',
         pass: 'jaqn arbz erem bcwk'
+    },
+    tls: {
+        rejectUnauthorized: false
     }
 });
 
@@ -242,28 +245,22 @@ const QuotationController = {
                 `;
 
                 // Generate PDF buffer
-                const browser = await puppeteer.launch({
-                    headless: true,
-                    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-                });
+                pdf.create(htmlContent, { format: 'Letter' }).toBuffer(function (err, buffer) {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).json({ error: 'Failed to generate PDF.' });
+                    }
 
-                const page = await browser.newPage();
-
-                await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-                const pdfBuffer = await page.pdf({ format: 'Letter', printBackground: true });
-
-                await browser.close();
-
-                // Prepare email content
-                const customerName = ShopInformation.ShopOwnerContactPerson;
-                const companyName = ShopInformation.ShopName;
-                const contactInformation = ShopInformation.Contact;
-                const contactEmail = ShopInformation.EmailID;
-                const mailOptions = {
-                    from: 'sumitpathakofficial914@gmail.com',
-                    to: contactEmail,
-                    subject: 'Quotation Details',
-                    text: `Dear ${customerName},
+                    // Prepare email content
+                    const customerName = ShopInformation.ShopOwnerContactPerson;
+                    const companyName = ShopInformation.ShopName;
+                    const contactInformation = ShopInformation.Contact;
+                    const contactEmail = ShopInformation.EmailID;
+                    const mailOptions = {
+                        from: 'sumitpathakofficial914@gmail.com',
+                        to: contactEmail,
+                        subject: 'Quotation Details',
+                        text: `Dear ${customerName},
     
     We hope this email finds you well.
 
@@ -290,32 +287,32 @@ const QuotationController = {
    
     Best regards,
     Aakar Canvassing`,
-                    attachments: [
-                        {
-                            filename: `${customerName}-${AddDetails.QuotationID}.pdf`,
-                            content: pdfBuffer,
-                            contentType: 'application/pdf'
+                        attachments: [
+                            {
+                                filename: `${customerName}-${AddDetails.QuotationID}.pdf`,
+                                content: buffer,
+                                contentType: 'application/pdf'
+                            }
+                        ]
+                    };
+
+                    transporter.sendMail(mailOptions, function (error, _) {
+                        if (error) {
+                            console.error(error);
+                            return res.status(500).json({ error: error.message });
                         }
-                    ]
-                };
 
-                transporter.sendMail(mailOptions, function (error, _) {
-                    if (error) {
-                        console.error(error);
-                        return res.status(500).json({ error: error.message });
-                    }
-
-                    // Save quotation
-                    const newQuotation = new Quotation(req.body);
-                    newQuotation.save()
-                        .then(() => {
-                            res.status(201).json({ message: 'Quotation saved successfully.' });
-                        })
-                        .catch(error => {
-                            res.status(500).json({ error: error.message });
-                        });
+                        // Save quotation
+                        const newQuotation = new Quotation(req.body);
+                        newQuotation.save()
+                            .then(() => {
+                                res.status(201).json({ message: 'Quotation saved successfully.' });
+                            })
+                            .catch(error => {
+                                res.status(500).json({ error: error.message });
+                            });
+                    });
                 });
-
             } else {
                 // Save quotation directly
                 const newQuotation = new Quotation(req.body);
