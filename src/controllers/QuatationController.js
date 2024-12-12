@@ -254,7 +254,10 @@ const QuotationController = {
                     </html>
                 `;
                 const pdfFilePath = path.join(__dirname, `../quotation-${Date.now()}.pdf`);
-                const browser = await puppeteer.launch();
+                const browser = await puppeteer.launch({
+                    headless: true, // Make sure headless mode is enabled
+                    args: ['--no-sandbox', '--disable-setuid-sandbox'] // Additional flags to improve compatibility on certain environments
+                });
                 const page = await browser.newPage();
                 await page.setContent(htmlContent);
                 await page.pdf({ path: pdfFilePath, format: 'A4' });
