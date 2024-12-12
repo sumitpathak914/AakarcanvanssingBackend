@@ -8,7 +8,7 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com', // Use 'smtp.gmail.com' explicitly for Gmail
     port: 465, // Use 465 if 'secure: true'
-    secure: false, // Use 'true' if port is 465
+    secure: true, // Use 'true' if port is 465
     auth: {
         user: 'sumitpathakofficial914@gmail.com',
         pass: 'awtiquudehddpias'
@@ -266,7 +266,7 @@ const QuotationController = {
                     const contactEmail = ShopInformation.EmailID;
 
                     const mailOptions = {
-                        from: 'sumitpathakofficial914@gmail.com',
+                        from: 'prempathak914@gmail.com',
                         to: contactEmail,
                         subject: 'Quotation Details',
                         text: `Dear ${customerName},
