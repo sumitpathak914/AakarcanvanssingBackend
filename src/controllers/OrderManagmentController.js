@@ -6,13 +6,14 @@ const path = require('path');
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com', // Use 'smtp.gmail.com' explicitly for Gmail
-    port: 465, // Use 465 if 'secure: true'
-    secure: true, // Use 'true' if port is 465
+    service: 'gmail',
+    // port: 587, 
+    // secure: false,
     auth: {
         user: 'sumitpathakofficial914@gmail.com',
-        pass: 'awtiquudehddpias' // Make sure to secure this using environment variables
-    }
+        pass: 'jaqn arbz erem bcwk'
+    },
+
 });
 const orderController = {
 
