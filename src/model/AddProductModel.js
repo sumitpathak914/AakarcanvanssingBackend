@@ -23,6 +23,11 @@ const productSchema = new Schema({
     price: { type: Number, default: null },
     discount: { type: String, default: '' },
     supplierName: { type: String, default: '' },
+
+    FactoryGST: { type: String, default: '' },
+    FactoryFSSAI: { type: String, default: '' },
+
+
     FactoryId: { type: String, default: '' },
     supplierCity: { type: String, default: '' },
     Brand_Name: { type: String, default: '' },

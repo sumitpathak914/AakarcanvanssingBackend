@@ -53,6 +53,8 @@ const SupplierInfoSchema = new Schema({
     FactoryAddress: { type: String, },
     FactoryContact: { type: String, },
     FactoryId: { type: String, },
+    FactoryFSSAI: { type: String, },
+    FactoryGST: { type: String, },
 });
 
 const ProductDetailsSchema = new Schema({
@@ -81,6 +83,8 @@ const CustomerInfoSchema = new Schema({
     EmailID: { type: String, },
     Billing_Address: { type: String, },
     Shipping_Address: { type: String, },
+    gstNumber: { type: String, },
+    FSSAINumber: { type: String, },
 });
 
 // Payment Details schema for Bank payments

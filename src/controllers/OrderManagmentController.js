@@ -15,86 +15,11 @@ const transporter = nodemailer.createTransport({
     },
 
 });
+
+
+
 const orderController = {
-
-
-
-
-    //  CreateOrder : async (req, res) => {
-    //     try {
-    //         // Destructure the relevant fields from the request body
-    //         const { orderId, Total, PaymentDoneAmount, PaymentMethod, Duepayment, ProductDetails, customerInfo, PaymentDetails } = req.body;
-
-    //         // Determine which payment details to include based on PaymentMethod
-    //         let paymentDetails;
-
-    //         if (PaymentMethod === 'bank') {
-    //             paymentDetails = {
-    //                 BankDetails: {
-    //                     BankName: PaymentDetails.BankName,
-    //                     AccountHolderName: PaymentDetails.AccountHolderName,
-    //                     AccountNumber: PaymentDetails.AccountNumber,
-    //                     IFSCCode: PaymentDetails.IFSCCode,
-    //                     PaymentAmount: PaymentDetails.PaymentAmount
-    //                 }
-    //             };
-    //         } else if (PaymentMethod === 'cheque') {
-    //             paymentDetails = {
-    //                 ChequeDetails: {
-    //                     BankName: PaymentDetails.BankName,
-    //                     AccountHolderName: PaymentDetails.AccountHolderName,
-    //                     ChequeNumber: PaymentDetails.ChequeNumber,
-    //                     PaymentAmount: PaymentDetails.PaymentAmount
-    //                 }
-    //             };
-    //         } else {
-    //             // If PaymentMethod is not recognized, respond with an error
-    //             return res.status(400).json({ result: false, statusCode: 400, error: 'Invalid payment method.' });
-    //         }
-
-    //         // Create a new Order instance with the payment details
-    //         const order = new Order({
-    //             ...req.body,
-    //             PaymentDetails: paymentDetails // Add the determined payment details
-    //         });
-
-    //         // Save the order to the database
-    //         await order.save();
-
-    //         // Create an array of TransactionRecordsData based on the provided data
-    //         const transactionData = [];
-
-    //         // Add a transaction record if PaymentDoneAmount and Total are provided
-    //         if (PaymentDoneAmount && Total) {
-    //             transactionData.push({
-    //                 PaymentDoneAmount,
-    //                 PaymentMethod,
-    //                 Duepayment,
-    //                 Total
-    //             });
-    //         }
-
-    //         // Create a new TransactionRecord instance with the extracted data
-    //         const transactionRecord = new TransactionRecord({
-    //             orderId,
-    //             Date: new Date(), // Use the current date or provide a specific date
-    //             Total,
-    //             customerInfo,
-    //             ProductDetails,
-    //             TransactionData: transactionData // Add the constructed array here
-    //         });
-
-    //         // Save the transaction record to the database
-    //         await transactionRecord.save();
-
-    //         // Respond with a success message
-    //         res.status(201).json({ result: true, statusCode: 201, message: 'Order created successfully.' });
-    //     } catch (err) {
-    //         // Respond with an error message
-    //         res.status(400).json({ result: false, statusCode: 400, error: err.message });
-    //     }
-    // },
-
+   
     CreateOrder: async (req, res) => {
         try {
             // Destructure the relevant fields from the request body
@@ -135,6 +60,48 @@ const orderController = {
         } catch (err) {
             // Respond with an error message
             res.status(400).json({ result: false, statusCode: 400, error: err.message });
+        }
+    },
+    DeleteOrder: async (req, res) => {
+        try {
+            const { orderId } = req.body; // The orderId will be passed as a URL parameter
+
+            // Delete the order from the Order collection
+            const deletedOrder = await Order.findOneAndDelete({ orderId });
+
+            if (!deletedOrder) {
+                return res.status(404).json({
+                    result: false,
+                    statusCode: 404,
+                    message: 'Order not found.'
+                });
+            }
+
+            // Delete the transaction record associated with the order
+            const deletedTransactionRecord = await TransactionRecord.findOneAndDelete({ orderId });
+
+            if (!deletedTransactionRecord) {
+                return res.status(404).json({
+                    result: false,
+                    statusCode: 404,
+                    message: 'Transaction record not found.'
+                });
+            }
+
+            // Respond with a success message
+            res.status(200).json({
+                result: true,
+                statusCode: 200,
+                message: 'Order and transaction record deleted successfully.'
+            });
+
+        } catch (err) {
+            // Respond with an error message
+            res.status(500).json({
+                result: false,
+                statusCode: 500,
+                error: err.message
+            });
         }
     },
 
