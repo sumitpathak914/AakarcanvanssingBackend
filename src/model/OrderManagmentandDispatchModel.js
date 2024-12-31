@@ -78,6 +78,7 @@ const ProductDetailsSchema = new Schema({
 
 const CustomerInfoSchema = new Schema({
     CustomerName: { type: String, },
+    ShopID: { type: String, },
     ShopName: { type: String, },
     ContactNo: { type: String, },
     EmailID: { type: String, },
