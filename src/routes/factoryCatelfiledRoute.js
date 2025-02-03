@@ -1,0 +1,11 @@
+const express = require('express');
+const FactoryUserRouter = express.Router();
+const userController = require('../controllers/FactoryControllerForCatelfiled');
+FactoryUserRouter.post('/AddFactory', userController.SaveFactory);
+FactoryUserRouter.post('/GetFactories', userController.getFactoriesByCategory);
+FactoryUserRouter.get('/GetAllFActories', userController.getAllUsers);
+FactoryUserRouter.get('/factory/:factoryId', userController.getFactoryById);
+FactoryUserRouter.delete('/DeleteFactory/:id', userController.deleteFactory);
+FactoryUserRouter.put('/update-factory', userController.UpdateFactory);
+FactoryUserRouter.post('/FactoryLoginAccess', userController.UpdateIsAllowLogin);
+module.exports = FactoryUserRouter;

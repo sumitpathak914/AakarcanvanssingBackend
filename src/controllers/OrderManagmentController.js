@@ -23,7 +23,7 @@ const orderController = {
     CreateOrder: async (req, res) => {
         try {
             // Destructure the relevant fields from the request body
-            const { orderId, Total, PaymentMethod, PaymentDoneAmount, Duepayment, ProductDetails, customerInfo } = req.body;
+            const { orderId, Total, PaymentMethod, remark,PaymentDoneAmount, Duepayment, ProductDetails, customerInfo } = req.body;
 
             // Determine which payment details to include based on PaymentMethod
             const transactionData = {

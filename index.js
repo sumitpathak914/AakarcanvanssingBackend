@@ -116,6 +116,9 @@ const Contactrouter = require('./src/routes/ContactRoute');
 const countRouter = require('./src/routes/CountRoute');
 const Cartrouter = require('./src/routes/AddtocartRoute');
 const Pricerouter = require('./src/routes/PriceRoute');
+const FactoryUserRouter = require('./src/routes/factoryCatelfiledRoute');
+const cartFieldDealerrouter = require('./src/routes/CartFieldRoute');
+const FactoryToFactoryOrderRouter = require('./src/routes/FactoryToFactoryRoute');
 
 
 const app = express();
@@ -151,6 +154,9 @@ app.use('/', Contactrouter);
 app.use('/DashboardCount', countRouter);
 app.use('/cart', Cartrouter);
 app.use('/', Pricerouter);
+app.use('/Catelfiled_factory', FactoryUserRouter);
+app.use('/Catelfiled_factory', cartFieldDealerrouter);
+app.use('/FactoryToFactory', FactoryToFactoryOrderRouter);
 app.get('/clear-cache', (req, res) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     res.set('Pragma', 'no-cache');

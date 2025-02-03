@@ -1,5 +1,6 @@
 const factory = require('../model/FactoryListModel');
 const Order = require('../model/OrderManagmentandDispatchModel');
+const FactoryToFactory = require('../model/FactorytofactoryModel');
 const PDFDocument = require('pdfkit'); // Import pdfkit
 const fs = require('fs'); // Import fs for file system operations
 const path = require('path');
@@ -68,58 +69,92 @@ const FactoryController = {
     },
     calculateFactoryCommission: async (req, res) => {
         try {
-            const orders = await Order.find(); // Fetch all orders
+            const currentYear = new Date().getFullYear(); // Get the current year
+
+            // Filter orders to only include those from the current year
+            const orders = await Order.find({
+                "ProductDetails.OrderDate": { $regex: `^${currentYear}` } // Match orders starting with the current year
+            });
+
             const commissions = {};
 
-            // Loop through orders to calculate commissions
             for (const order of orders) {
-                // Loop through the ProductDetails array
                 for (const product of order.ProductDetails) {
-                    // Check if the product's dispatch status is completed
                     if (product.dispatchShippingDetails.DispatchStatus === 'Completed') {
-                        const factoryId = product.SupplierInfo.FactoryId; // Get the factory ID from the product
-                        const commissionRates = product.commission; // Get commission rates for different sizes
-                        console.log(commissionRates, "---------commissionRates-------")
-                        // Calculate commission based on the size and quantity
-                        for (const selection of product.selection) {
-                            const size = selection.size; // Get the size of the product
-                            const quantity = selection.quantity; // Get the quantity of the product
+                        const factoryId = product.SupplierInfo.FactoryId;
+                        const commissionRates = product.commission;
 
-                            let commissionRate;
-                            if (size === '30kg') {
-                                commissionRate = commissionRates.supplier30Kg; // Get the supplier commission for 30kg
-                            } else if (size === '50kg') {
-                                commissionRate = commissionRates.supplier50Kg; // Get the supplier commission for 50kg
-                            } else if (size === '25kg') {
-                                commissionRate = commissionRates.supplier25Kg; // Get the supplier commission for 70kg
-                            }
-                            else if (size === '100kg') {
-                                commissionRate = commissionRates.supplier100Kg; // Get the supplier commission for 70kg
-                            }
+                        for (const selection of product.selection) {
+                            const size = selection.size;
+                            const quantity = selection.quantity;
+
+                            let commissionRate = 0;
+                            if (size === '30kg') commissionRate = commissionRates.supplier30Kg;
+                            else if (size === '50kg') commissionRate = commissionRates.supplier50Kg;
+                            else if (size === '25kg') commissionRate = commissionRates.supplier25Kg;
+                            else if (size === '100kg') commissionRate = commissionRates.supplier100Kg;
 
                             if (commissionRate) {
-                                // Calculate total commission for this product
                                 const totalCommission = commissionRate * quantity;
-
-                                // Initialize the commission for this factory if it doesn't exist
-                                if (!commissions[factoryId]) {
-                                    commissions[factoryId] = 0;
-                                }
-
-                                // Add the total commission to the factory's total
-                                commissions[factoryId] += totalCommission;
+                                commissions[factoryId] = (commissions[factoryId] || 0) + totalCommission;
                             }
                         }
                     }
                 }
             }
 
-            res.status(200).json({ result: true, statusCode: 200, commissions });
+            // Filter FactoryToFactory orders for the current year as well
+            const FactoryToFactoryorders = await FactoryToFactory.find({
+                "ProductDetails.OrderDate": { $regex: `^${currentYear}` }
+            });
+
+            for (const order of FactoryToFactoryorders) {
+                const customerFactoryId = order.customerInfo.FactoryID;
+
+                for (const product of order.ProductDetails) {
+                    if (product.OrderTrackingDetails.Delivered) {
+                        const supplierFactoryId = product.SupplierInfo.FactoryId;
+                        const commissionRates = product.commission;
+
+                        for (const selection of product.selection) {
+                            const size = selection.size;
+                            const quantity = selection.quantity;
+
+                            let commissionRate = 0;
+                            if (size === '30kg') commissionRate = commissionRates.supplier30Kg;
+                            else if (size === '50kg') commissionRate = commissionRates.supplier50Kg;
+                            else if (size === '25kg') commissionRate = commissionRates.supplier25Kg;
+                            else if (size === '100kg') commissionRate = commissionRates.supplier100Kg;
+
+                            if (commissionRate) {
+                                const totalCommission = commissionRate * quantity;
+
+                                // Add to supplier factory commission
+                                commissions[supplierFactoryId] = (commissions[supplierFactoryId] || 0) + totalCommission;
+
+                                // Add to customer factory commission
+                                commissions[customerFactoryId] = (commissions[customerFactoryId] || 0) + totalCommission;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Convert commissions object to array format
+            const formattedCommissions = Object.keys(commissions).map(factoryId => ({
+                factoryId,
+                totalCommission: commissions[factoryId]
+            }));
+
+            res.status(200).json({ result: true, statusCode: 200, commissions: formattedCommissions });
         } catch (error) {
             console.error('Error calculating factory commissions:', error);
             res.status(500).json({ result: false, statusCode: 500, error: 'Failed to calculate commissions.' });
         }
     },
+
+
+
 
 
 
@@ -365,6 +400,8 @@ const FactoryController = {
             res.status(500).json({ message: 'An error occurred while fetching orders.' });
         }
     },
+
+    
 
 
 
