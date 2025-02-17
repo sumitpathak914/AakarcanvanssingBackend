@@ -105,10 +105,10 @@ const FactoryController = {
             }
 
             // Filter FactoryToFactory orders for the current year as well
-            const FactoryToFactoryorders = await FactoryToFactory.find({
-                "ProductDetails.OrderDate": { $regex: `^${currentYear}` }
-            });
-
+            // const FactoryToFactoryorders = await FactoryToFactory.find({
+            //     "ProductDetails.OrderDate": { $regex: `^${currentYear}` }
+            // });
+            const FactoryToFactoryorders = await FactoryToFactory.find({});
             for (const order of FactoryToFactoryorders) {
                 const customerFactoryId = order.customerInfo.FactoryID;
 
