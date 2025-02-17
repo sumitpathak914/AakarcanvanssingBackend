@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.75171e3b.css",
-    "main.js": "/static/js/main.8ba67f6b.js",
+    "main.css": "/static/css/main.ac3a3fe1.css",
+    "main.js": "/static/js/main.e2161cfc.js",
     "static/js/213.805c21ee.chunk.js": "/static/js/213.805c21ee.chunk.js",
     "static/js/455.2f1e4104.chunk.js": "/static/js/455.2f1e4104.chunk.js",
     "static/js/453.647a298f.chunk.js": "/static/js/453.647a298f.chunk.js",
@@ -10,14 +10,14 @@
     "static/media/AakaarLogo.png": "/static/media/AakaarLogo.18945249b6e90897fd35.png",
     "index.html": "/index.html",
     "static/media/filter.svg": "/static/media/filter.6232c2d1d1162da67a4f6d19e2c7611a.svg",
-    "main.75171e3b.css.map": "/static/css/main.75171e3b.css.map",
-    "main.8ba67f6b.js.map": "/static/js/main.8ba67f6b.js.map",
+    "main.ac3a3fe1.css.map": "/static/css/main.ac3a3fe1.css.map",
+    "main.e2161cfc.js.map": "/static/js/main.e2161cfc.js.map",
     "213.805c21ee.chunk.js.map": "/static/js/213.805c21ee.chunk.js.map",
     "455.2f1e4104.chunk.js.map": "/static/js/455.2f1e4104.chunk.js.map",
     "453.647a298f.chunk.js.map": "/static/js/453.647a298f.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.75171e3b.css",
-    "static/js/main.8ba67f6b.js"
+    "static/css/main.ac3a3fe1.css",
+    "static/js/main.e2161cfc.js"
   ]
 }
