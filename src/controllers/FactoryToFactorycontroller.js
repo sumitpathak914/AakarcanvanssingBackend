@@ -1,52 +1,159 @@
 const Order = require('../model/FactorytofactoryModel');
 const TransactionRecord = require('../model/FactorytoFactoryTrsaction');
 const { v4: uuidv4 } = require('uuid');
-
+const Notification = require('../model/FactoryNotification');
 
 const FactoryToFactoryController = {
 
+    // CreateOrder: async (req, res) => {
+    //     try {
+    //         // Destructure the relevant fields from the request body
+    //         const { orderId, Total, PaymentMethod, PaymentDoneAmount, Duepayment, ProductDetails, customerInfo } = req.body;
+
+    //         // Determine which payment details to include based on PaymentMethod
+    //         const transactionData = {
+    //             PaymentDoneAmount,
+    //             Duepayment,
+    //             Total,
+    //             PaymentMethod,
+
+    //         };
+
+    //         // Create a new Order instance with the payment details
+    //         const order = new Order(req.body);
+
+    //         await order.save();
+
+
+    //         // Create a new TransactionRecord instance with the extracted data
+    //         const transactionRecord = new TransactionRecord({
+    //             orderId,
+    //             Date: new Date(), // Use the current date or provide a specific date
+    //             Total,
+    //             customerInfo,
+    //             PaymentMethod,
+    //             ProductDetails,
+
+    //             // TransactionData: [transactionData] // Add the constructed array here
+    //         });
+
+    //         // Save the transaction record to the database
+    //         await transactionRecord.save();
+    //         const notifications = [
+    //             {
+    //                 factoryId: customerInfo.FactoryID,
+    //                 message: `Your order ${orderId} has been successfully placed.`
+    //             },
+    //             {
+    //                 factoryId: customerInfo.supplierFactoryId,
+    //                 message: `A new order ${orderId} has been placed for your products.`
+    //             }
+    //         ];
+
+    //         await Notification.insertMany(notifications);
+
+    //         // Respond with a success message
+    //         res.status(201).json({ result: true, statusCode: 201, message: 'Order created successfully.' });
+    //     } catch (err) {
+    //         // Respond with an error message
+    //         res.status(400).json({ result: false, statusCode: 400, error: err.message });
+    //     }
+    // },
+
+
+    // CreateOrder: async (req, res) => {
+    //     try {
+    //         const { orderId, Total, PaymentMethod, PaymentDoneAmount, Duepayment, ProductDetails, customerInfo } = req.body;
+
+    //         // Create a new Order instance with the payment details
+    //         const order = new Order(req.body);
+    //         await order.save();
+
+    //         // Create a new TransactionRecord instance with the extracted data
+    //         const transactionRecord = new TransactionRecord({
+    //             orderId,
+    //             Date: new Date(),
+    //             Total,
+    //             customerInfo,
+    //             PaymentMethod,
+    //             ProductDetails
+    //         });
+
+    //         await transactionRecord.save();
+
+    //         // Notifications array
+    //         const notifications = [];
+
+    //         // Customer Notification
+    //         notifications.push({
+    //             factoryId: customerInfo.FactoryID,
+    //             message: `A new order ${orderId} has been placed for your product. `
+    //         });
+    //         ProductDetails.forEach(product => {
+    //             if (product.SupplierInfo?.FactoryId) {
+    //                 notifications.push({
+    //                     factoryId: product.SupplierInfo.FactoryId,
+    //                     message: `You have received a new order request (Order ID: ${orderId}) from ${customerInfo.FactoryName} for your product ${product.ProductName} (Product ID: ${product.ProductID}). Please review and process the order.`
+    //                 });
+    //             }
+    //         });
+    //         await Notification.insertMany(notifications);
+
+    //         // Respond with success
+    //         res.status(201).json({ result: true, statusCode: 201, message: 'Order created successfully and notifications sent.' });
+    //     } catch (err) {
+    //         res.status(400).json({ result: false, statusCode: 400, error: err.message });
+    //     }
+    // },
     CreateOrder: async (req, res) => {
         try {
-            // Destructure the relevant fields from the request body
             const { orderId, Total, PaymentMethod, PaymentDoneAmount, Duepayment, ProductDetails, customerInfo } = req.body;
-
-            // Determine which payment details to include based on PaymentMethod
-            const transactionData = {
-                PaymentDoneAmount,
-                Duepayment,
-                Total,
-                PaymentMethod,
-
-            };
 
             // Create a new Order instance with the payment details
             const order = new Order(req.body);
-
             await order.save();
-
 
             // Create a new TransactionRecord instance with the extracted data
             const transactionRecord = new TransactionRecord({
                 orderId,
-                Date: new Date(), // Use the current date or provide a specific date
+                Date: new Date(),
                 Total,
                 customerInfo,
                 PaymentMethod,
-                ProductDetails,
-
-                // TransactionData: [transactionData] // Add the constructed array here
+                ProductDetails
             });
 
-            // Save the transaction record to the database
             await transactionRecord.save();
 
-            // Respond with a success message
-            res.status(201).json({ result: true, statusCode: 201, message: 'Order created successfully.' });
+            // Notifications array
+            const notifications = [];
+
+            // Customer Notification
+            notifications.push({
+                factoryId: customerInfo.FactoryID,
+                message: `A new order ${orderId} has been placed for your product.`,
+                status: 0 // Unread notification
+            });
+
+            ProductDetails.forEach(product => {
+                if (product.SupplierInfo?.FactoryId) {
+                    notifications.push({
+                        factoryId: product.SupplierInfo.FactoryId,
+                        message: `You have received a new order request (Order ID: ${orderId}) from ${customerInfo.FactoryName} for your product ${product.ProductName} (Product ID: ${product.ProductID}). Please review and process the order.`,
+                        status: 0 // Unread notification
+                    });
+                }
+            });
+
+            await Notification.insertMany(notifications);
+
+            // Respond with success
+            res.status(201).json({ result: true, statusCode: 201, message: 'Order created successfully and notifications sent.' });
         } catch (err) {
-            // Respond with an error message
             res.status(400).json({ result: false, statusCode: 400, error: err.message });
         }
     },
+
     GetProductsByFactoryId: async (req, res) => {
         try {
             const { factoryId } = req.query; // Get factoryId from request parameters
@@ -166,13 +273,21 @@ const FactoryToFactoryController = {
                 product.OrderTrackingDetails.Out_for_Delivery_Note = statusNote || "Order is out for delivery.";
             }
             else if (status === "Delivered") {
+                // Set all OrderTrackingDetails flags to true
+                product.OrderTrackingDetails.Place = true;
+                product.OrderTrackingDetails.Shipped = true;
+                product.OrderTrackingDetails.Out_for_Delivery = true;
                 product.OrderTrackingDetails.Delivered = true;
-                product.OrderTrackingDetails.DeliveredNote = statusNote || "Order delivered successfully.";
-            }
 
-            // Update Dispatch Details
-            product.dispatchShippingDetails.DispatchStatus = "pending";
-            product.dispatchShippingDetails.DispatchID = uniqueCode;
+                // Add notes for each tracking step
+                product.OrderTrackingDetails.PlaceNote = statusNote || "Order placed successfully.";
+                product.OrderTrackingDetails.ShippedNote = statusNote || "Order has been shipped.";
+                product.OrderTrackingDetails.Out_for_Delivery_Note = statusNote || "Order is out for delivery.";
+                product.OrderTrackingDetails.DeliveredNote = statusNote || "Order delivered successfully.";
+
+                product.dispatchShippingDetails.DispatchStatus = "delivered";
+                product.dispatchShippingDetails.DispatchID = uniqueCode;
+            }
 
             // Save the updated order
             await order.save();
@@ -183,6 +298,7 @@ const FactoryToFactoryController = {
             res.status(500).json({ message: "Server error", error });
         }
     },
+
 
 
     // getTransactionByOrderId: async (req, res) => {
@@ -287,7 +403,7 @@ const FactoryToFactoryController = {
 
 
 
-    
+
     // generateFactoryToFactoryInvoice: async (req, res) => {
     //     const { factoryId, startDate, endDate } = req.body;
     //     console.log("Request Body:", req.body); // Log the incoming request body
@@ -393,7 +509,7 @@ const FactoryToFactoryController = {
     //         res.status(500).json({ message: "An error occurred while fetching orders." });
     //     }
     // }
-     addTransaction : async (req, res) => {
+    addTransaction: async (req, res) => {
         try {
             const { orderId, productId, type, amount, date } = req.body;
             const paymentAmount = parseFloat(amount);
@@ -507,7 +623,7 @@ const FactoryToFactoryController = {
         console.log("Request Body:", req.body); // Log the incoming request body
 
         try {
-            let dateFilter = {}; // Initialize an empty filter for dates
+            let dateFilter = {};
 
             if (startDate && endDate) {
                 const start = new Date(startDate);
@@ -611,7 +727,140 @@ const FactoryToFactoryController = {
             console.error("Error fetching orders:", error);
             res.status(500).json({ message: "An error occurred while fetching orders." });
         }
-    }
+    },
+    GetFactoryNotifications: async (req, res) => {
+        try {
+            const { factoryId } = req.params;
+
+
+            if (!factoryId) {
+                return res.status(400).json({ result: false, statusCode: 400, error: "Factory ID is required" });
+            }
+
+
+            const notifications = await Notification.find({ factoryId }).sort({ createdAt: -1 });
+
+
+            res.status(200).json({ result: true, statusCode: 200, notifications });
+        } catch (err) {
+            res.status(500).json({ result: false, statusCode: 500, error: err.message });
+        }
+    },
+    resetNotificationStatus: async (req, res) => {
+        try {
+            const { factoryId } = req.body;
+
+            // Validate if factoryId exists
+            if (!factoryId || typeof factoryId !== 'string') {
+                return res.status(400).json({
+                    result: false,
+                    statusCode: 400,
+                    message: 'Valid Factory ID is required.'
+                });
+            }
+
+            // Find unread notifications (status 0) for the factory
+            const unreadNotifications = await Notification.find({
+                factoryId,
+                status: 0
+            });
+
+            // If no unread notifications are found, return a 404 error
+            if (unreadNotifications.length === 0) {
+                return res.status(404).json({
+                    result: false,
+                    statusCode: 404,
+                    message: 'No unread notifications found for this factory.'
+                });
+            }
+
+            // Update notifications to mark them as read (status 1)
+            const updated = await Notification.updateMany(
+                { factoryId, status: 0 },
+                { $set: { status: 1 } }
+            );
+
+            // If no notifications were updated, it might be an issue with the query
+            if (updated.modifiedCount === 0) {
+                return res.status(500).json({
+                    result: false,
+                    statusCode: 500,
+                    message: 'Failed to mark notifications as read.'
+                });
+            }
+
+            // Success response
+            res.status(200).json({
+                result: true,
+                statusCode: 200,
+                message: 'Unread notifications marked as read for the factory.'
+            });
+
+        } catch (err) {
+            // General error handling
+            res.status(500).json({
+                result: false,
+                statusCode: 500,
+                error: err.message
+            });
+        }
+    },
+
+     deleteNotification : async (req, res) => {
+        try {
+            const { notificationId, factoryId } = req.body;  // Extract data from body
+
+            // Validate if both notificationId and factoryId are provided
+            if (!notificationId || !factoryId) {
+                return res.status(400).json({
+                    result: false,
+                    statusCode: 400,
+                    message: 'Both Notification ID and Factory ID are required.',
+                });
+            }
+
+            // Ensure notificationId is a valid ObjectId
+            // if (!mongoose.Types.ObjectId.isValid(notificationId)) {
+            //     return res.status(400).json({
+            //         result: false,
+            //         statusCode: 400,
+            //         message: 'Invalid Notification ID format.',
+            //     });
+            // }
+
+            // Find the notification by its notificationId and factoryId (as string)
+            const notification = await Notification.findOne({
+                _id: notificationId,
+                factoryId: factoryId,  // Treat factoryId as string
+            });
+
+            // If the notification doesn't exist, return 404
+            if (!notification) {
+                return res.status(404).json({
+                    result: false,
+                    statusCode: 404,
+                    message: 'Notification not found for the provided Factory ID.',
+                });
+            }
+
+            // Delete the notification
+            await Notification.findByIdAndDelete(notificationId);
+
+            // Success response
+            res.status(200).json({
+                result: true,
+                statusCode: 200,
+                message: 'Notification deleted successfully.',
+            });
+        } catch (err) {
+            // General error handling
+            res.status(500).json({
+                result: false,
+                statusCode: 500,
+                error: err.message,
+            });
+        }
+    },
 
 
 };

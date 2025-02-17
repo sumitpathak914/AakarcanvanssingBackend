@@ -11,4 +11,7 @@ FactoryToFactoryOrderRouter.post('/updateStatus', OrderManagmentController.Updat
 FactoryToFactoryOrderRouter.post('/GetTrasactionRecords', OrderManagmentController.getTransactionByOrderId);
 FactoryToFactoryOrderRouter.post('/addTransaction', OrderManagmentController.addTransaction);
 FactoryToFactoryOrderRouter.post('/FactoryToFactoryReport', OrderManagmentController.generateFactoryToFactoryInvoice);
+FactoryToFactoryOrderRouter.get("/notifications/:factoryId", OrderManagmentController.GetFactoryNotifications);
+FactoryToFactoryOrderRouter.put('/notifications/reset-status', OrderManagmentController.resetNotificationStatus);
+FactoryToFactoryOrderRouter.delete('/delete', OrderManagmentController.deleteNotification);
 module.exports = FactoryToFactoryOrderRouter;
