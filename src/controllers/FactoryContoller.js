@@ -69,12 +69,13 @@ const FactoryController = {
     },
     calculateFactoryCommission: async (req, res) => {
         try {
-            const currentYear = new Date().getFullYear(); // Get the current year
+            // const currentYear = new Date().getFullYear(); // Get the current year
 
-            // Filter orders to only include those from the current year
-            const orders = await Order.find({
-                "ProductDetails.OrderDate": { $regex: `^${currentYear}` } // Match orders starting with the current year
-            });
+            // // Filter orders to only include those from the current year
+            // const orders = await Order.find({
+            //     "ProductDetails.OrderDate": { $regex: `^${currentYear}` } // Match orders starting with the current year
+            // });
+            const orders = await Order.find({}); 
 
             const commissions = {};
 
