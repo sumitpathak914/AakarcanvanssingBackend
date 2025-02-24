@@ -7,6 +7,7 @@ FactoryToFactoryOrderRouter.post('/CreateOrder', OrderManagmentController.Create
 
 FactoryToFactoryOrderRouter.get('/GetOrderById', OrderManagmentController.GetProductsByFactoryId);
 FactoryToFactoryOrderRouter.get('/GetPurchaseOrder', OrderManagmentController.GetProductsByCustomerFactoryId);
+FactoryToFactoryOrderRouter.get('/GetOrderOFFactoryToFactory', OrderManagmentController.GetAllProducts);  
 FactoryToFactoryOrderRouter.post('/updateStatus', OrderManagmentController.UpdateTheOrderStatus);
 FactoryToFactoryOrderRouter.post('/GetTrasactionRecords', OrderManagmentController.getTransactionByOrderId);
 FactoryToFactoryOrderRouter.post('/addTransaction', OrderManagmentController.addTransaction);
