@@ -298,7 +298,33 @@ const FactoryToFactoryController = {
             res.status(500).json({ message: "Server error", error });
         }
     },
+  GetAllProducts: async (req, res) => {
+        try {
+            // Fetch all orders
+            const orders = await Order.find();
 
+            // Extract all products along with their order IDs and Factorycustomer information
+            let allProducts = [];
+            orders.forEach(order => {
+                const products = order.ProductDetails.map(product => ({
+                    ...product.toObject(), // Convert Mongoose object to plain JS object
+                    orderId: order.orderId, // Attach order ID from the order
+                    duePayment: order.Duepayment || null,
+                    Factorycustomer: order.customerInfo || null // Attach customer info if available
+                }));
+                allProducts.push(...products);
+            });
+
+            if (allProducts.length === 0) {
+                return res.status(404).json({ result: false, statusCode: 404, message: 'No products found.' });
+            }
+
+            // Send response with all products including order IDs and customer info
+            res.status(200).json({ result: true, statusCode: 200, data: allProducts });
+        } catch (err) {
+            res.status(500).json({ result: false, statusCode: 500, error: err.message });
+        }
+    },
 
 
     // getTransactionByOrderId: async (req, res) => {
